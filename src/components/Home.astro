@@ -1,0 +1,92 @@
+---
+import Footer from "./sub_components/Footer.astro";
+import Header from "./sub_components/Header.astro";
+import { listPublicProps, listPublicPropsBySport } from "../lib/props";
+
+interface Props {
+  sport?: string;
+}
+
+const { sport } = Astro.props as Props;
+const playerProps = sport ? await listPublicPropsBySport(sport) : await listPublicProps();
+const heading = sport ? `${sport} Props` : "Player Props";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sports Betting - Player Props</title>
+    <link rel="stylesheet" href="/src/styles/global.css" />
+    <!-- Ensure the correct path is used here -->
+    <script type="module" src="/src/scripts/modal.js"></script>
+    <script type="module" src="/src/scripts/buttonColor.js"></script>
+    <script type="module" src="/src/scripts/betSlip.js"></script>
+  </head>
+  <body data-logged-in={Astro.locals.user ? "true" : "false"}>
+    <!-- Header -->
+    <Header />
+
+    <!-- Player Prop Bets -->
+    <main class="container">
+      <h2 class="title">{heading}</h2>
+
+      <div class="grid">
+        {playerProps.map((prop) => (
+          <div /*key={prop.id}*/ class="card player-prop">
+            <h1 class="player">{prop.player}</h1>
+            <p class="value-stat">{prop.line} {prop.stat}</p>
+            <p class="sport">{prop.sport}</p>
+            <p class="time">
+              {prop.displayTime}
+            </p>
+
+            <div class="bet-options">
+              <button data-prop={JSON.stringify(prop)} class="over-btn">
+                <p>Over</p>
+              </button>
+              <button data-prop={JSON.stringify(prop)} class="under-btn">
+                <p>Under</p>
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </main>
+
+    <div class="modal-div">
+      <button class="open-modal" id="openModal" type="button">
+        <span class="betslip-summary-text">
+          <strong id="betslip-count">0 Picks</strong>
+          <span id="betslip-payout"></span>
+        </span>
+        <span class="betslip-chevron" aria-hidden="true">▲</span>
+      </button>
+      <div class="modal" id="modal">
+        <div class="modal-inner">
+          <h2>Your Picks</h2>
+          <div id="bet-slip-legs"></div>
+
+          <div class="bet-mode-toggle">
+            <label><input type="radio" name="betMode" value="single" checked /> Individual bets</label>
+            <label><input type="radio" name="betMode" value="parlay" /> Parlay</label>
+          </div>
+
+          <div id="parlay-stake-wrap" hidden>
+            <label for="parlayStake">Total stake</label>
+            <input type="number" id="parlayStake" min="1" step="1" />
+          </div>
+
+          <p class="bet-slip-summary" id="bet-slip-summary"></p>
+          <div id="bet-slip-error" class="form-error"></div>
+
+          <button id="placeBetBtn" type="button">Place Bet(s)</button>
+          <button id="closeModal" type="button" class="secondary-btn">Close</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Footer -->
+    <Footer />
+  </body>
+</html>

@@ -1,0 +1,61 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/sub_components/Header.astro";
+import { listBetsForUser } from "../lib/bets";
+
+if (!Astro.locals.user) {
+  return Astro.redirect("/login");
+}
+
+const bets = await listBetsForUser(Astro.locals.user.id);
+const liveBets = bets.filter((bet) => bet.status === "pending");
+const pastBets = bets.filter((bet) => bet.status !== "pending");
+---
+
+<Layout>
+  <script type="module" src="/src/scripts/myBets.js"></script>
+  <Header />
+  <main class="container">
+    <p><a href="/">← Back to Props</a></p>
+
+    <h2 class="title">Live Bets</h2>
+    <div class="grid">
+      {liveBets.map((bet) => (
+        <div class="card admin-prop">
+          <h1 class="player">{bet.mode === "parlay" ? "Parlay" : bet.legs[0].player}</h1>
+          <p class="status-badge">
+            <span class={`status-pill status-pill--${bet.status}`}>{bet.status}</span>
+            Stake: {bet.stake} — Potential payout: <span data-animate-number={bet.potentialPayout}>0</span>
+          </p>
+          {bet.legs.map((leg) => (
+            <p class="time">
+              {leg.player} — {leg.pick} {leg.line} {leg.stat} ({leg.legResult})
+            </p>
+          ))}
+        </div>
+      ))}
+      {liveBets.length === 0 && <p>No live bets right now.</p>}
+    </div>
+
+    <h2 class="title">Past Bets</h2>
+    <div class="grid">
+      {pastBets.map((bet) => (
+        <div class="card admin-prop">
+          <h1 class="player">{bet.mode === "parlay" ? "Parlay" : bet.legs[0].player}</h1>
+          <p class="status-badge">
+            <span class={`status-pill status-pill--${bet.status}`}>{bet.status}</span>
+            Stake: {bet.stake} — Payout: <span data-animate-number={bet.payout ?? 0}>0</span>
+          </p>
+          {bet.legs.map((leg) => (
+            <p class="time">
+              {leg.player} — {leg.pick} {leg.line} {leg.stat} ({leg.legResult})
+            </p>
+          ))}
+        </div>
+      ))}
+      {pastBets.length === 0 && <p>No settled bets yet.</p>}
+    </div>
+
+    <script type="application/json" id="past-bets-data" set:html={JSON.stringify(pastBets)} />
+  </main>
+</Layout>

@@ -1,0 +1,17 @@
+---
+import Layout from "../../layouts/Layout.astro";
+
+const hasError = Astro.url.searchParams.has("error");
+---
+
+<Layout>
+  <main class="container admin-login">
+    <h2 class="title">Admin Login</h2>
+    {hasError && <p class="form-error">Invalid password.</p>}
+    <form method="POST" action="/api/admin/login" class="admin-form" data-astro-reload>
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required autofocus />
+      <button type="submit">Log In</button>
+    </form>
+  </main>
+</Layout>

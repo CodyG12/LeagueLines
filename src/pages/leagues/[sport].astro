@@ -1,0 +1,10 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Home from "../../components/Home.astro";
+
+const sport = Astro.params.sport as string;
+---
+
+<Layout>
+  <Home sport={sport} />
+</Layout>

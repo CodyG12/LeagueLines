@@ -1,0 +1,21 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const error = Astro.url.searchParams.get("error");
+---
+
+<Layout>
+  <main class="container admin-login">
+    <h2 class="title">Sign Up</h2>
+    {error === "duplicate" && <p class="form-error">An account with that email already exists.</p>}
+    {error === "1" && <p class="form-error">Please enter a valid email and password (8+ characters).</p>}
+    <form method="POST" action="/api/auth/signup" class="admin-form" data-astro-reload>
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required autofocus />
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" minlength="8" required />
+      <button type="submit">Sign Up</button>
+    </form>
+    <p><a href="/login">Already have an account? Log in</a></p>
+  </main>
+</Layout>
