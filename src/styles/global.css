@@ -154,6 +154,19 @@ select {
   color: var(--primary-text);
 }
 
+.leg-stake,
+#parlayStake {
+  -moz-appearance: textfield;
+}
+
+.leg-stake::-webkit-outer-spin-button,
+.leg-stake::-webkit-inner-spin-button,
+#parlayStake::-webkit-outer-spin-button,
+#parlayStake::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 .bet-options {
   display: flex;
   gap: var(--space-1);
@@ -713,32 +726,15 @@ select {
   background: rgba(239, 68, 68, 0.3);
 }
 
-.bet-mode-toggle {
-  display: flex;
-  gap: var(--space-1);
+.bet-mode-label {
+  display: inline-block;
   margin: var(--space-4) 0;
-  background-color: rgba(255, 255, 255, 0.05);
-  padding: var(--space-1);
-  border-radius: var(--radius-pill);
-}
-
-.bet-mode-toggle label {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-1);
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-pill);
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 0.85rem;
-  color: var(--secondary-text);
-}
-
-.bet-mode-toggle label:has(input:checked) {
   background-color: var(--highlight-color);
   color: var(--primary-bg);
+  font-weight: 600;
+  font-size: 0.85rem;
 }
 
 .bet-slip-summary {

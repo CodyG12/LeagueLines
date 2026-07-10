@@ -8,15 +8,17 @@ const activeSport = Astro.url.pathname.startsWith("/leagues/")
 ---
 
 <nav class="site-nav">
-  <a href="/" class="site-brand">League Lines</a>
+  <a href="/" class="site-brand">LeagueLines</a>
   <div class="league-tabs">
-    {sports.map((sport) => (
-      <a
-        href={`/leagues/${encodeURIComponent(sport)}`}
-        class={sport === activeSport ? "league-tab active" : "league-tab"}
-      >
-        {sport}
-      </a>
-    ))}
+    {
+      sports.map((sport) => (
+        <a
+          href={`/leagues/${encodeURIComponent(sport)}`}
+          class={sport === activeSport ? "league-tab active" : "league-tab"}
+        >
+          {sport}
+        </a>
+      ))
+    }
   </div>
 </nav>

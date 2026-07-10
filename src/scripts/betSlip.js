@@ -5,6 +5,7 @@ const modal = document.getElementById("modal");
 const legsContainer = document.getElementById("bet-slip-legs");
 const parlayStakeWrap = document.getElementById("parlay-stake-wrap");
 const parlayStakeInput = document.getElementById("parlayStake");
+const betModeLabel = document.getElementById("bet-mode-label");
 const summaryEl = document.getElementById("bet-slip-summary");
 const errorEl = document.getElementById("bet-slip-error");
 const placeBetBtn = document.getElementById("placeBetBtn");
@@ -45,7 +46,7 @@ function syncOpenButtonVisibility() {
 }
 
 function currentMode() {
-  return document.querySelector('input[name="betMode"]:checked')?.value ?? "single";
+  return getSelectedPicks().length >= 2 ? "parlay" : "single";
 }
 
 function computePayout(picks) {
@@ -96,7 +97,9 @@ function updateSummary() {
     legsContainer.querySelectorAll(".leg-stake").forEach((input) => {
       total += Number(input.value) || 0;
     });
-    summaryEl.textContent = `Total stake: ${total} units across ${picks.length} picks`;
+    summaryEl.textContent = picks.length
+      ? `Total stake: ${total} units for ${picks[0].prop.player}`
+      : "";
   }
   updateMiniBar();
 }
@@ -141,17 +144,9 @@ function renderLegs() {
     legsContainer.appendChild(row);
   });
 
-  const parlayToggle = document.querySelector('input[name="betMode"][value="parlay"]');
-  if (picks.length < 2) {
-    parlayToggle.disabled = true;
-    if (parlayToggle.checked) {
-      document.querySelector('input[name="betMode"][value="single"]').checked = true;
-      parlayStakeWrap.hidden = true;
-      renderLegs();
-      return;
-    }
-  } else {
-    parlayToggle.disabled = false;
+  if (betModeLabel) {
+    betModeLabel.textContent =
+      mode === "parlay" ? `Parlay — ${picks.length} picks` : "Individual bet";
   }
 
   parlayStakeWrap.hidden = mode !== "parlay";
@@ -173,10 +168,6 @@ document.addEventListener("click", (event) => {
   if (event.target.closest(".over-btn, .under-btn")) {
     renderLegs();
   }
-});
-
-document.querySelectorAll('input[name="betMode"]').forEach((input) => {
-  input.addEventListener("change", renderLegs);
 });
 
 legsContainer?.addEventListener("input", updateSummary);

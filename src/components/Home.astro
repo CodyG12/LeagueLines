@@ -67,10 +67,7 @@ const heading = sport ? `${sport} Props` : "Player Props";
           <h2>Your Picks</h2>
           <div id="bet-slip-legs"></div>
 
-          <div class="bet-mode-toggle">
-            <label><input type="radio" name="betMode" value="single" checked /> Individual bets</label>
-            <label><input type="radio" name="betMode" value="parlay" /> Parlay</label>
-          </div>
+          <p class="bet-mode-label" id="bet-mode-label"></p>
 
           <div id="parlay-stake-wrap" hidden>
             <label for="parlayStake">Total stake</label>
