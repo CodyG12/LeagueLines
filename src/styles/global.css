@@ -61,6 +61,15 @@ body {
   margin: 0;
 }
 
+.page-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
 a {
   color: var(--highlight-color);
   text-decoration: none;
@@ -564,6 +573,87 @@ select {
   color: var(--secondary-text);
   margin-top: var(--space-2);
   font-size: 1.05rem;
+}
+
+/* Landing page */
+.landing-hero {
+  position: relative;
+  min-height: calc(100vh - 76px);
+  overflow: hidden;
+  background-color: var(--primary-bg);
+}
+
+.landing-hero .landing-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.85;
+}
+
+.landing-hero-overlay {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 76px);
+  background: radial-gradient(circle at 50% 40%, rgba(11, 7, 16, 0.35), rgba(11, 7, 16, 0.85));
+  padding: var(--space-6) var(--space-5);
+}
+
+.landing-hero-content {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.landing-eyebrow {
+  display: inline-block;
+  color: var(--highlight-color);
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--space-3);
+}
+
+.landing-title {
+  font-size: clamp(2.4rem, 6vw, 3.8rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--primary-text);
+  margin: 0;
+}
+
+.landing-subtitle {
+  color: var(--secondary-text);
+  font-size: 1.1rem;
+  margin-top: var(--space-4);
+  line-height: 1.6;
+}
+
+.landing-cta-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  background-color: var(--highlight-color);
+  color: var(--primary-bg);
+  border: 1px solid var(--highlight-color);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  text-decoration: none;
 }
 
 .units-pill {

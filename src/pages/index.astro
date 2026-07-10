@@ -1,11 +1,26 @@
 ---
 import Home from "../components/Home.astro";
+import Landing from "../components/Landing.astro";
+import Nav from "../components/sub_components/Nav.astro";
+import Footer from "../components/sub_components/Footer.astro";
 import Layout from "../layouts/Layout.astro";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const user = Astro.locals.user;
 ---
 
-<Layout>
-  <Home />
-</Layout>
+{
+  user && (
+    <Layout>
+      <Home />
+    </Layout>
+  )
+}
+{
+  !user && (
+    <Layout>
+      <Nav />
+      <Landing />
+      <Footer />
+    </Layout>
+  )
+}

@@ -1,6 +1,7 @@
 ---
 import Footer from "./sub_components/Footer.astro";
 import Header from "./sub_components/Header.astro";
+import PageBackground from "./sub_components/PageBackground.astro";
 import { listPublicProps, listPublicPropsBySport } from "../lib/props";
 
 interface Props {
@@ -24,6 +25,8 @@ const heading = sport ? `${sport} Props` : "Player Props";
     <script type="module" src="/src/scripts/betSlip.js"></script>
   </head>
   <body data-logged-in={Astro.locals.user ? "true" : "false"}>
+    <PageBackground />
+
     <!-- Header -->
     <Header />
 

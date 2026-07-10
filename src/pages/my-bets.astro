@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/sub_components/Header.astro";
+import PageBackground from "../components/sub_components/PageBackground.astro";
 import { listBetsForUser } from "../lib/bets";
 
 if (!Astro.locals.user) {
@@ -14,6 +15,7 @@ const pastBets = bets.filter((bet) => bet.status !== "pending");
 
 <Layout>
   <script type="module" src="/src/scripts/myBets.js"></script>
+  <PageBackground />
   <Header />
   <main class="container">
     <p><a href="/">← Back to Props</a></p>

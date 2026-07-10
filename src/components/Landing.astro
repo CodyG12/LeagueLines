@@ -1,0 +1,37 @@
+---
+import GradientBlinds from "./react/GradientBlinds";
+---
+
+<section class="landing-hero">
+  <GradientBlinds
+    client:load
+    gradientColors={["#FF9FFC", "#5227FF"]}
+    angle={20}
+    noise={0.5}
+    blindCount={16}
+    blindMinWidth={60}
+    spotlightRadius={0.5}
+    spotlightSoftness={1}
+    spotlightOpacity={1}
+    mouseDampening={0.15}
+    distortAmount={0}
+    shineDirection="left"
+    mixBlendMode="lighten"
+    className="landing-hero-bg"
+  />
+
+  <div class="landing-hero-overlay">
+    <div class="container landing-hero-content">
+      <span class="landing-eyebrow">Friendly Bets. Serious Bragging Rights.</span>
+      <h1 class="landing-title">Bet Player Props With Your Friends</h1>
+      <p class="landing-subtitle">
+        Pick overs and unders on real player stats, stack them into parlays, and see who
+        actually knows sports. No real money on the line — just units and bragging rights.
+      </p>
+      <div class="landing-cta-row">
+        <a href="/signup" class="btn-primary">Sign Up Free</a>
+        <a href="/login" class="btn-outline">Log In</a>
+      </div>
+    </div>
+  </div>
+</section>
