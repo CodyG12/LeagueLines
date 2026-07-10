@@ -13,7 +13,16 @@ const betslipCountEl = document.getElementById("betslip-count");
 const betslipPayoutEl = document.getElementById("betslip-payout");
 const isLoggedIn = document.body.dataset.loggedIn === "true";
 
-let lastPayoutShown = 0;
+// Keep in sync with MAX_LEGS / parlayMultiplier in src/lib/bets.ts.
+const MAX_LEGS = 10;
+const LEG_ODDS = 21 / 11;
+
+function parlayMultiplier(legCount) {
+  const n = Math.min(Math.max(legCount, 0), MAX_LEGS);
+  return Math.round(LEG_ODDS ** n * 2) / 2;
+}
+
+let lastMultiplierShown = 0;
 
 function getSelectedPicks() {
   const picks = [];
@@ -49,23 +58,6 @@ function currentMode() {
   return getSelectedPicks().length >= 2 ? "parlay" : "single";
 }
 
-function computePayout(picks) {
-  const mode = currentMode();
-  let payout = 0;
-
-  if (mode === "parlay") {
-    const stake = Number(parlayStakeInput?.value) || 0;
-    payout = stake * 2 ** picks.length;
-  } else {
-    legsContainer?.querySelectorAll(".leg-stake").forEach((input) => {
-      const stake = Number(input.value) || 0;
-      payout += stake * 2;
-    });
-  }
-
-  return payout;
-}
-
 function updateMiniBar() {
   if (!betslipCountEl || !betslipPayoutEl) return;
   const picks = getSelectedPicks();
@@ -74,33 +66,42 @@ function updateMiniBar() {
 
   if (picks.length === 0) {
     betslipPayoutEl.textContent = "";
-    lastPayoutShown = 0;
+    lastMultiplierShown = 0;
     return;
   }
 
-  const payout = computePayout(picks);
-  animateNumber(betslipPayoutEl, lastPayoutShown, payout, {
+  const multiplier = parlayMultiplier(picks.length);
+  animateNumber(betslipPayoutEl, lastMultiplierShown, multiplier, {
     duration: 400,
-    prefix: "To win ",
-    suffix: " units",
+    suffix: "x",
+    decimals: 1,
   });
-  lastPayoutShown = payout;
+  lastMultiplierShown = multiplier;
 }
 
 function updateSummary() {
   const picks = getSelectedPicks();
-  if (currentMode() === "parlay") {
-    const stake = Number(parlayStakeInput.value) || 0;
-    summaryEl.textContent = `Parlay stake: ${stake} units across ${picks.length} picks`;
-  } else {
-    let total = 0;
-    legsContainer.querySelectorAll(".leg-stake").forEach((input) => {
-      total += Number(input.value) || 0;
-    });
-    summaryEl.textContent = picks.length
-      ? `Total stake: ${total} units for ${picks[0].prop.player}`
-      : "";
+
+  if (picks.length === 0) {
+    summaryEl.textContent = "";
+    updateMiniBar();
+    return;
   }
+
+  const multiplier = parlayMultiplier(picks.length);
+
+  let stake = 0;
+  if (currentMode() === "parlay") {
+    stake = Number(parlayStakeInput.value) || 0;
+  } else {
+    legsContainer.querySelectorAll(".leg-stake").forEach((input) => {
+      stake += Number(input.value) || 0;
+    });
+  }
+
+  const potentialWinnings = Math.round(stake * multiplier * 100) / 100;
+  summaryEl.textContent =
+    `Multiplier: ${multiplier.toFixed(1)}x — Potential winnings: ${potentialWinnings} units`;
   updateMiniBar();
 }
 

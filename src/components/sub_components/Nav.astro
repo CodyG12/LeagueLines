@@ -1,14 +1,29 @@
 ---
 import { listDistinctSports } from "../../lib/props";
+import { countPendingBetsForUser } from "../../lib/bets";
 
 const sports = await listDistinctSports();
 const activeSport = Astro.url.pathname.startsWith("/leagues/")
   ? decodeURIComponent(Astro.url.pathname.slice("/leagues/".length))
   : null;
+
+const user = Astro.locals.user;
+const pendingCount = user ? await countPendingBetsForUser(user.id) : 0;
 ---
 
 <nav class="site-nav">
-  <a href="/" class="site-brand">LeagueLines</a>
+  <div class="nav-left">
+    <a href="/" class="site-brand">LeagueLines</a>
+    {
+      user && (
+        <a href="/my-bets" class="my-bets-link">
+          My Bets
+          {pendingCount > 0 && <span class="live-badge">{pendingCount} live</span>}
+        </a>
+      )
+    }
+  </div>
+
   <div class="league-tabs">
     {
       sports.map((sport) => (
@@ -19,6 +34,35 @@ const activeSport = Astro.url.pathname.startsWith("/leagues/")
           {sport}
         </a>
       ))
+    }
+  </div>
+
+  <div class="nav-right">
+    {
+      user ? (
+        <>
+          <span class="units-pill">{user.units} units</span>
+          <details class="account-menu">
+            <summary class="account-summary">{user.email}</summary>
+            <div class="account-dropdown">
+              <form method="POST" action="/api/auth/logout" data-astro-reload>
+                <button type="submit" class="btn-outline">
+                  Log Out
+                </button>
+              </form>
+            </div>
+          </details>
+        </>
+      ) : (
+        <>
+          <a href="/login" class="btn-outline">
+            Log In
+          </a>
+          <a href="/signup" class="btn-outline">
+            Sign Up
+          </a>
+        </>
+      )
     }
   </div>
 </nav>

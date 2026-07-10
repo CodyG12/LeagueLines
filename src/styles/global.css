@@ -157,6 +157,7 @@ select {
 .leg-stake,
 #parlayStake {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 .leg-stake::-webkit-outer-spin-button,
@@ -565,16 +566,6 @@ select {
   font-size: 1.05rem;
 }
 
-/* User bar */
-.user-bar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-3);
-  margin-top: var(--space-5);
-  flex-wrap: wrap;
-}
-
 .units-pill {
   background-color: rgba(255, 255, 255, 0.08);
   color: var(--primary-text);
@@ -607,13 +598,25 @@ select {
   z-index: 100;
   display: flex;
   align-items: center;
-  justify-content: center;
   flex-wrap: wrap;
-  gap: var(--space-5);
+  gap: var(--space-3) var(--space-5);
   padding: var(--space-4) var(--space-5);
   background-color: rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-left: auto;
 }
 
 .site-brand {
@@ -626,7 +629,10 @@ select {
 .league-tabs {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: var(--space-2);
+  flex: 1;
+  min-width: 0;
 }
 
 .league-tab {
@@ -668,6 +674,56 @@ select {
   font-weight: bold;
   padding: 0.15rem 0.45rem;
   border-radius: var(--radius-pill);
+}
+
+.account-menu {
+  position: relative;
+}
+
+.account-summary {
+  list-style: none;
+  cursor: pointer;
+  color: var(--primary-text);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-pill);
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.account-summary::-webkit-details-marker {
+  display: none;
+}
+
+.account-summary:hover {
+  background-color: rgba(255, 255, 255, 0.14);
+}
+
+.account-menu[open] .account-summary {
+  background-color: var(--highlight-color);
+  color: var(--primary-bg);
+}
+
+.account-dropdown {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  right: 0;
+  z-index: 110;
+  background-color: var(--secondary-bg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2);
+  box-shadow: var(--shadow-card);
+  min-width: 140px;
+}
+
+.account-dropdown form {
+  margin: 0;
+}
+
+.account-dropdown .btn-outline {
+  width: 100%;
+  justify-content: center;
 }
 
 @media (max-width: 640px) {

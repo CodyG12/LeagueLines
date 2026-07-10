@@ -7,6 +7,17 @@ export type BetMode = "single" | "parlay";
 export type BetStatus = "pending" | "won" | "lost" | "pushed";
 export type LegResult = "pending" | "win" | "loss" | "push";
 
+export const MAX_LEGS = 10;
+
+// Decimal odds for a single standard (-110) leg, compounded per leg — the
+// usual sportsbook parlay-odds formula, e.g. 2 legs ≈ 3.5x, 3 legs ≈ 7x.
+const LEG_ODDS = 21 / 11;
+
+export function parlayMultiplier(legCount: number): number {
+  const n = Math.min(Math.max(legCount, 0), MAX_LEGS);
+  return Math.round(LEG_ODDS ** n * 2) / 2;
+}
+
 export interface BetLeg {
   propId: ObjectId;
   sport: string;
@@ -93,6 +104,7 @@ export async function placeBets(
   parlayStake?: number,
 ): Promise<{ bets: PublicBet[] } | { error: string }> {
   if (picks.length === 0) return { error: "At least one pick is required" };
+  if (picks.length > MAX_LEGS) return { error: `You can bet on at most ${MAX_LEGS} props at once` };
 
   const propIds = picks.map((p) => p.propId);
   if (new Set(propIds).size !== propIds.length) {
@@ -150,7 +162,7 @@ export async function placeBets(
           mode: "parlay",
           legs,
           stake: totalCost,
-          potentialPayout: totalCost * 2 ** legs.length,
+          potentialPayout: totalCost * parlayMultiplier(legs.length),
           pendingLegCount: legs.length,
           status: "pending",
           payout: null,
@@ -165,7 +177,7 @@ export async function placeBets(
         mode: "single",
         legs: [leg],
         stake: picks[i].stake as number,
-        potentialPayout: (picks[i].stake as number) * 2,
+        potentialPayout: (picks[i].stake as number) * parlayMultiplier(1),
         pendingLegCount: 1,
         status: "pending",
         payout: null,
@@ -209,8 +221,8 @@ function computeFinalOutcome(
     return { status: "pushed", payout: stake };
   }
 
-  const multiplier = legs.reduce((acc, leg) => (leg.legResult === "win" ? acc * 2 : acc), 1);
-  return { status: "won", payout: stake * multiplier };
+  const winCount = legs.filter((leg) => leg.legResult === "win").length;
+  return { status: "won", payout: Math.round(stake * parlayMultiplier(winCount) * 100) / 100 };
 }
 
 export async function settleBetsForProp(

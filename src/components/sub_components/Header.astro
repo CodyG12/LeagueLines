@@ -1,9 +1,5 @@
 ---
 import Nav from "./Nav.astro";
-import { countPendingBetsForUser } from "../../lib/bets";
-
-const user = Astro.locals.user;
-const pendingCount = user ? await countPendingBetsForUser(user.id) : 0;
 ---
 
 <Nav />
@@ -13,36 +9,5 @@ const pendingCount = user ? await countPendingBetsForUser(user.id) : 0;
   <div class="container hero-inner">
     <h1 class="hero-title">LeagueLines</h1>
     <p class="hero-tagline">Friendly Bets. Serious Bragging Rights.</p>
-    <div class="user-bar">
-      {
-        user ? (
-          <>
-            <span class="units-pill">
-              {user.email} — {user.units} units
-            </span>
-            <a href="/my-bets" class="my-bets-link">
-              My Bets
-              {pendingCount > 0 && (
-                <span class="live-badge">{pendingCount} live</span>
-              )}
-            </a>
-            <form method="POST" action="/api/auth/logout" data-astro-reload>
-              <button type="submit" class="btn-outline">
-                Log Out
-              </button>
-            </form>
-          </>
-        ) : (
-          <>
-            <a href="/login" class="btn-outline">
-              Log In
-            </a>
-            <a href="/signup" class="btn-outline">
-              Sign Up
-            </a>
-          </>
-        )
-      }
-    </div>
   </div>
 </header>
