@@ -550,31 +550,6 @@ select {
   justify-content: center;
 }
 
-/* Hero */
-.hero {
-  padding: var(--space-7) var(--space-5);
-  background: linear-gradient(160deg, color-mix(in srgb, var(--accent-purple) 35%, var(--primary-bg)), var(--primary-bg) 70%);
-  box-shadow: var(--shadow-card);
-}
-
-.hero-inner {
-  text-align: center;
-}
-
-.hero-title {
-  font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: 800;
-  color: var(--primary-text);
-  letter-spacing: -0.02em;
-  margin: 0;
-}
-
-.hero-tagline {
-  color: var(--secondary-text);
-  margin-top: var(--space-2);
-  font-size: 1.05rem;
-}
-
 /* Landing page */
 .landing-hero {
   position: relative;

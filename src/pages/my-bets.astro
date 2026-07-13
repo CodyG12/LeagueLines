@@ -1,7 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/sub_components/Header.astro";
-import PageBackground from "../components/sub_components/PageBackground.astro";
+import Lightfall from "../components/react/Lightfall";
 import { listBetsForUser } from "../lib/bets";
 
 if (!Astro.locals.user) {
@@ -15,7 +15,9 @@ const pastBets = bets.filter((bet) => bet.status !== "pending");
 
 <Layout>
   <script type="module" src="/src/scripts/myBets.js"></script>
-  <PageBackground />
+  <div class="page-bg">
+    <Lightfall client:load colors={["#f5c518", "#8b5cf6"]} backgroundColor="#1e1728" />
+  </div>
   <Header />
   <main class="container">
     <p><a href="/">← Back to Props</a></p>

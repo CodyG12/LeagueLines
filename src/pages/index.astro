@@ -18,7 +18,7 @@ const user = Astro.locals.user;
 {
   !user && (
     <Layout>
-      <Nav />
+      <Nav showCategories={false} />
       <Landing />
       <Footer />
     </Layout>

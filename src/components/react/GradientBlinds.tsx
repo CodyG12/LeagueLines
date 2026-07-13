@@ -286,7 +286,7 @@ void main() {
         uniforms.iMouse.value = [x, y];
       }
     };
-    canvas.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("pointermove", onPointerMove);
 
     const loop = (t: number) => {
       rafRef.current = requestAnimationFrame(loop);

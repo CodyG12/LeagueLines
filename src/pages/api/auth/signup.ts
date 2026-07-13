@@ -2,21 +2,29 @@ import type { APIRoute } from "astro";
 import { createUser } from "../../../lib/users";
 import { USER_COOKIE_NAME, createUserSessionToken } from "../../../lib/userAuth";
 
+const USERNAME_PATTERN = /^[a-zA-Z0-9_]{3,20}$/;
+
 export const POST: APIRoute = async ({ request, cookies, redirect }) => {
   const form = await request.formData();
-  const email = form.get("email");
+  const firstName = form.get("firstName");
+  const lastName = form.get("lastName");
+  const username = form.get("username");
   const password = form.get("password");
 
   if (
-    typeof email !== "string" ||
+    typeof firstName !== "string" ||
+    typeof lastName !== "string" ||
+    typeof username !== "string" ||
     typeof password !== "string" ||
-    !email.includes("@") ||
+    firstName.trim().length === 0 ||
+    lastName.trim().length === 0 ||
+    !USERNAME_PATTERN.test(username) ||
     password.length < 8
   ) {
     return redirect("/signup?error=1");
   }
 
-  const user = await createUser(email, password);
+  const user = await createUser(firstName.trim(), lastName.trim(), username, password);
   if (user === "duplicate") {
     return redirect("/signup?error=duplicate");
   }
