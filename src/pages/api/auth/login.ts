@@ -4,14 +4,14 @@ import { USER_COOKIE_NAME, createUserSessionToken } from "../../../lib/userAuth"
 
 export const POST: APIRoute = async ({ request, cookies, redirect }) => {
   const form = await request.formData();
-  const email = form.get("email");
+  const username = form.get("username");
   const password = form.get("password");
 
-  if (typeof email !== "string" || typeof password !== "string") {
+  if (typeof username !== "string" || typeof password !== "string") {
     return redirect("/login?error=1");
   }
 
-  const user = await verifyUserCredentials(email, password);
+  const user = await verifyUserCredentials(username, password);
   if (!user) {
     return redirect("/login?error=1");
   }

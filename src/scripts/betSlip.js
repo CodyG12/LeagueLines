@@ -5,6 +5,7 @@ const modal = document.getElementById("modal");
 const legsContainer = document.getElementById("bet-slip-legs");
 const parlayStakeWrap = document.getElementById("parlay-stake-wrap");
 const parlayStakeInput = document.getElementById("parlayStake");
+const betModeLabel = document.getElementById("bet-mode-label");
 const summaryEl = document.getElementById("bet-slip-summary");
 const errorEl = document.getElementById("bet-slip-error");
 const placeBetBtn = document.getElementById("placeBetBtn");
@@ -12,7 +13,16 @@ const betslipCountEl = document.getElementById("betslip-count");
 const betslipPayoutEl = document.getElementById("betslip-payout");
 const isLoggedIn = document.body.dataset.loggedIn === "true";
 
-let lastPayoutShown = 0;
+// Keep in sync with MAX_LEGS / parlayMultiplier in src/lib/bets.ts.
+const MAX_LEGS = 10;
+const LEG_ODDS = 21 / 11;
+
+function parlayMultiplier(legCount) {
+  const n = Math.min(Math.max(legCount, 0), MAX_LEGS);
+  return Math.round(LEG_ODDS ** n * 2) / 2;
+}
+
+let lastMultiplierShown = 0;
 
 function getSelectedPicks() {
   const picks = [];
@@ -45,24 +55,7 @@ function syncOpenButtonVisibility() {
 }
 
 function currentMode() {
-  return document.querySelector('input[name="betMode"]:checked')?.value ?? "single";
-}
-
-function computePayout(picks) {
-  const mode = currentMode();
-  let payout = 0;
-
-  if (mode === "parlay") {
-    const stake = Number(parlayStakeInput?.value) || 0;
-    payout = stake * 2 ** picks.length;
-  } else {
-    legsContainer?.querySelectorAll(".leg-stake").forEach((input) => {
-      const stake = Number(input.value) || 0;
-      payout += stake * 2;
-    });
-  }
-
-  return payout;
+  return getSelectedPicks().length >= 2 ? "parlay" : "single";
 }
 
 function updateMiniBar() {
@@ -73,31 +66,42 @@ function updateMiniBar() {
 
   if (picks.length === 0) {
     betslipPayoutEl.textContent = "";
-    lastPayoutShown = 0;
+    lastMultiplierShown = 0;
     return;
   }
 
-  const payout = computePayout(picks);
-  animateNumber(betslipPayoutEl, lastPayoutShown, payout, {
+  const multiplier = parlayMultiplier(picks.length);
+  animateNumber(betslipPayoutEl, lastMultiplierShown, multiplier, {
     duration: 400,
-    prefix: "To win ",
-    suffix: " units",
+    suffix: "x",
+    decimals: 1,
   });
-  lastPayoutShown = payout;
+  lastMultiplierShown = multiplier;
 }
 
 function updateSummary() {
   const picks = getSelectedPicks();
-  if (currentMode() === "parlay") {
-    const stake = Number(parlayStakeInput.value) || 0;
-    summaryEl.textContent = `Parlay stake: ${stake} units across ${picks.length} picks`;
-  } else {
-    let total = 0;
-    legsContainer.querySelectorAll(".leg-stake").forEach((input) => {
-      total += Number(input.value) || 0;
-    });
-    summaryEl.textContent = `Total stake: ${total} units across ${picks.length} picks`;
+
+  if (picks.length === 0) {
+    summaryEl.textContent = "";
+    updateMiniBar();
+    return;
   }
+
+  const multiplier = parlayMultiplier(picks.length);
+
+  let stake = 0;
+  if (currentMode() === "parlay") {
+    stake = Number(parlayStakeInput.value) || 0;
+  } else {
+    legsContainer.querySelectorAll(".leg-stake").forEach((input) => {
+      stake += Number(input.value) || 0;
+    });
+  }
+
+  const potentialWinnings = Math.round(stake * multiplier * 100) / 100;
+  summaryEl.textContent =
+    `Multiplier: ${multiplier.toFixed(1)}x — Potential winnings: ${potentialWinnings} units`;
   updateMiniBar();
 }
 
@@ -141,17 +145,9 @@ function renderLegs() {
     legsContainer.appendChild(row);
   });
 
-  const parlayToggle = document.querySelector('input[name="betMode"][value="parlay"]');
-  if (picks.length < 2) {
-    parlayToggle.disabled = true;
-    if (parlayToggle.checked) {
-      document.querySelector('input[name="betMode"][value="single"]').checked = true;
-      parlayStakeWrap.hidden = true;
-      renderLegs();
-      return;
-    }
-  } else {
-    parlayToggle.disabled = false;
+  if (betModeLabel) {
+    betModeLabel.textContent =
+      mode === "parlay" ? `Parlay — ${picks.length} picks` : "Individual bet";
   }
 
   parlayStakeWrap.hidden = mode !== "parlay";
@@ -173,10 +169,6 @@ document.addEventListener("click", (event) => {
   if (event.target.closest(".over-btn, .under-btn")) {
     renderLegs();
   }
-});
-
-document.querySelectorAll('input[name="betMode"]').forEach((input) => {
-  input.addEventListener("change", renderLegs);
 });
 
 legsContainer?.addEventListener("input", updateSummary);

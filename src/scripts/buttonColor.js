@@ -1,6 +1,9 @@
 // Select all player prop containers
 const playerPropContainers = document.querySelectorAll(".player-prop");
 
+// Keep in sync with MAX_LEGS in src/lib/bets.ts.
+const MAX_LEGS = 10;
+
 // Loop through each player prop container to handle toggling independently
 playerPropContainers.forEach((container) => {
   const overBtn = container.querySelector(".over-btn");
@@ -11,6 +14,17 @@ playerPropContainers.forEach((container) => {
 
   function toggleSelection(clickedBtn, otherBtn) {
     const isSelected = clickedBtn.classList.contains("selected");
+    const isSwap = !isSelected && otherBtn.classList.contains("selected");
+
+    if (!isSelected && !isSwap) {
+      const selectedCount = document.querySelectorAll(
+        ".over-btn.selected, .under-btn.selected",
+      ).length;
+      if (selectedCount >= MAX_LEGS) {
+        alert(`You can only bet on up to ${MAX_LEGS} props at once.`);
+        return;
+      }
+    }
 
     // Deselect the other button within the same container
     otherBtn.classList.remove("selected");

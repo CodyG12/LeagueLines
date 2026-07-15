@@ -1,14 +1,21 @@
 :root {
-  --primary-bg: #0b0710;
-  --secondary-bg: #1e1728;
-  --primary-text: #ffffff;
-  --secondary-text: #b3a8c4;
-  --highlight-color: #f5c518;
-  --accent-purple: #8b5cf6;
+  --primary-bg: #050506;
+  --secondary-bg: #151417;
+  --surface-2: #1c1b20;
+  --primary-text: #f5f5f7;
+  --secondary-text: #98979d;
+  --highlight-color: #d4a72c;
+  --accent-purple: #7c5cfc;
 
   /* Semantic status colors — scoped to won/lost/live indicators only. */
-  --danger-color: #ef4444;
-  --success-color: #22c55e;
+  --danger-color: #ff453a;
+  --success-color: #30d158;
+
+  /* Typography — see DESIGN.md. Erica One is scoped to the brand wordmark only. */
+  --font-display: "General Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-body: "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-num: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-brand: "Erica One", -apple-system, sans-serif;
 
   /* Structural tokens */
   --radius-sm: 10px;
@@ -55,10 +62,18 @@
 body {
   background-color: var(--primary-bg);
   color: var(--primary-text);
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+  font-family: var(--font-body);
   line-height: 1.5;
   margin: 0;
+}
+
+.page-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  opacity: 0.4;
+  pointer-events: none;
 }
 
 a {
@@ -154,6 +169,20 @@ select {
   color: var(--primary-text);
 }
 
+.leg-stake,
+#parlayStake {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.leg-stake::-webkit-outer-spin-button,
+.leg-stake::-webkit-inner-spin-button,
+#parlayStake::-webkit-outer-spin-button,
+#parlayStake::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 .bet-options {
   display: flex;
   gap: var(--space-1);
@@ -199,6 +228,7 @@ select {
 }
 
 .title {
+  font-family: var(--font-display);
   font-size: 2.1rem;
   font-weight: 800;
   letter-spacing: -0.01em;
@@ -228,6 +258,7 @@ select {
 }
 
 .player {
+  font-family: var(--font-display);
   font-size: 1.75rem;
   font-weight: 800;
   color: var(--primary-text);
@@ -235,6 +266,8 @@ select {
 }
 
 .value-stat {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
   font-size: 1.6rem;
   font-weight: 800;
   color: var(--highlight-color);
@@ -358,11 +391,15 @@ select {
 }
 
 #betslip-count {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
   font-size: 1rem;
   font-weight: 800;
 }
 
 #betslip-payout {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
   font-size: 0.85rem;
   color: var(--highlight-color);
   font-weight: 600;
@@ -425,6 +462,7 @@ select {
 }
 
 .modal-inner h2 {
+  font-family: var(--font-display);
   margin: 0 0 var(--space-2);
   font-size: 1.4rem;
 }
@@ -461,6 +499,7 @@ select {
 }
 
 .admin-form h3 {
+  font-family: var(--font-display);
   grid-column: 1 / -1;
   margin: 0;
 }
@@ -527,42 +566,91 @@ select {
   justify-content: center;
 }
 
-/* Hero */
-.hero {
-  padding: var(--space-7) var(--space-5);
-  background: linear-gradient(160deg, color-mix(in srgb, var(--accent-purple) 35%, var(--primary-bg)), var(--primary-bg) 70%);
-  box-shadow: var(--shadow-card);
+/* Landing page */
+.landing-hero {
+  position: relative;
+  min-height: calc(100vh - 76px);
+  overflow: hidden;
+  background-color: var(--primary-bg);
 }
 
-.hero-inner {
-  text-align: center;
+.landing-hero .landing-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.85;
 }
 
-.hero-title {
-  font-size: clamp(2rem, 5vw, 3rem);
+.landing-hero-overlay {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 76px);
+  background: radial-gradient(circle at 50% 40%, rgba(11, 7, 16, 0.35), rgba(11, 7, 16, 0.85));
+  padding: var(--space-6) var(--space-5);
+}
+
+.landing-hero-content {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.landing-eyebrow {
+  display: inline-block;
+  color: var(--highlight-color);
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--space-3);
+}
+
+.landing-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 6vw, 3.8rem);
   font-weight: 800;
-  color: var(--primary-text);
   letter-spacing: -0.02em;
+  color: var(--primary-text);
   margin: 0;
 }
 
-.hero-tagline {
+.landing-subtitle {
   color: var(--secondary-text);
-  margin-top: var(--space-2);
-  font-size: 1.05rem;
+  font-size: 1.1rem;
+  margin-top: var(--space-4);
+  line-height: 1.6;
 }
 
-/* User bar */
-.user-bar {
+.landing-cta-row {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-3);
-  margin-top: var(--space-5);
+  margin-top: var(--space-6);
   flex-wrap: wrap;
 }
 
+.btn-primary {
+  background-color: var(--highlight-color);
+  color: var(--primary-bg);
+  border: 1px solid var(--highlight-color);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+
 .units-pill {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
   background-color: rgba(255, 255, 255, 0.08);
   color: var(--primary-text);
   padding: var(--space-2) var(--space-4);
@@ -594,26 +682,42 @@ select {
   z-index: 100;
   display: flex;
   align-items: center;
-  justify-content: center;
   flex-wrap: wrap;
-  gap: var(--space-5);
+  gap: var(--space-3) var(--space-5);
   padding: var(--space-4) var(--space-5);
   background-color: rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-left: auto;
+}
+
 .site-brand {
-  font-size: 1.25rem;
-  font-weight: 800;
+  font-family: var(--font-brand);
+  font-weight: 400;
+  font-size: 1.35rem;
   color: var(--highlight-color);
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
 }
 
 .league-tabs {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: var(--space-2);
+  flex: 1;
+  min-width: 0;
 }
 
 .league-tab {
@@ -655,6 +759,56 @@ select {
   font-weight: bold;
   padding: 0.15rem 0.45rem;
   border-radius: var(--radius-pill);
+}
+
+.account-menu {
+  position: relative;
+}
+
+.account-summary {
+  list-style: none;
+  cursor: pointer;
+  color: var(--primary-text);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-pill);
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.account-summary::-webkit-details-marker {
+  display: none;
+}
+
+.account-summary:hover {
+  background-color: rgba(255, 255, 255, 0.14);
+}
+
+.account-menu[open] .account-summary {
+  background-color: var(--highlight-color);
+  color: var(--primary-bg);
+}
+
+.account-dropdown {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  right: 0;
+  z-index: 110;
+  background-color: var(--secondary-bg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2);
+  box-shadow: var(--shadow-card);
+  min-width: 140px;
+}
+
+.account-dropdown form {
+  margin: 0;
+}
+
+.account-dropdown .btn-outline {
+  width: 100%;
+  justify-content: center;
 }
 
 @media (max-width: 640px) {
@@ -713,35 +867,20 @@ select {
   background: rgba(239, 68, 68, 0.3);
 }
 
-.bet-mode-toggle {
-  display: flex;
-  gap: var(--space-1);
+.bet-mode-label {
+  display: inline-block;
   margin: var(--space-4) 0;
-  background-color: rgba(255, 255, 255, 0.05);
-  padding: var(--space-1);
-  border-radius: var(--radius-pill);
-}
-
-.bet-mode-toggle label {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-1);
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-pill);
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 0.85rem;
-  color: var(--secondary-text);
-}
-
-.bet-mode-toggle label:has(input:checked) {
   background-color: var(--highlight-color);
   color: var(--primary-bg);
+  font-weight: 600;
+  font-size: 0.85rem;
 }
 
 .bet-slip-summary {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
   color: var(--primary-text);
   font-weight: 700;
   margin: var(--space-2) 0;

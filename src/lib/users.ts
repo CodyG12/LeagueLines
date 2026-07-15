@@ -6,7 +6,9 @@ export const STARTING_UNITS = 1000;
 
 export interface UserDoc {
   _id: ObjectId;
-  email: string;
+  firstName: string;
+  lastName: string;
+  username: string;
   passwordHash: string;
   units: number;
   createdAt: Date;
@@ -15,7 +17,9 @@ export interface UserDoc {
 
 export interface PublicUser {
   id: string;
-  email: string;
+  firstName: string;
+  lastName: string;
+  username: string;
   units: number;
 }
 
@@ -26,7 +30,14 @@ export async function getCollection(): Promise<Collection<UserDoc>> {
   const collection = client.db().collection<UserDoc>("users");
   if (!indexEnsured) {
     indexEnsured = true;
-    await collection.createIndex({ email: 1 }, { unique: true });
+    const existing = await collection.indexes();
+    if (existing.some((idx) => idx.name === "email_1")) {
+      await collection.dropIndex("email_1");
+    }
+    await collection.createIndex(
+      { username: 1 },
+      { unique: true, partialFilterExpression: { username: { $exists: true } } },
+    );
   }
   return collection;
 }
@@ -34,20 +45,26 @@ export async function getCollection(): Promise<Collection<UserDoc>> {
 export function toPublicUser(doc: UserDoc): PublicUser {
   return {
     id: doc._id.toString(),
-    email: doc.email,
+    firstName: doc.firstName,
+    lastName: doc.lastName,
+    username: doc.username,
     units: doc.units,
   };
 }
 
 export async function createUser(
-  email: string,
+  firstName: string,
+  lastName: string,
+  username: string,
   password: string,
 ): Promise<PublicUser | "duplicate"> {
   const collection = await getCollection();
   const now = new Date();
   const doc: UserDoc = {
     _id: new ObjectId(),
-    email: email.toLowerCase(),
+    firstName,
+    lastName,
+    username: username.toLowerCase(),
     passwordHash: hashPassword(password),
     units: STARTING_UNITS,
     createdAt: now,
@@ -67,11 +84,11 @@ export async function createUser(
 }
 
 export async function verifyUserCredentials(
-  email: string,
+  username: string,
   password: string,
 ): Promise<PublicUser | null> {
   const collection = await getCollection();
-  const doc = await collection.findOne({ email: email.toLowerCase() });
+  const doc = await collection.findOne({ username: username.toLowerCase() });
   if (!doc) return null;
   if (!verifyUserPassword(password, doc.passwordHash)) return null;
   return toPublicUser(doc);
