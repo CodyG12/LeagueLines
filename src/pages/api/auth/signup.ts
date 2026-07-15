@@ -17,11 +17,17 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
     typeof username !== "string" ||
     typeof password !== "string" ||
     firstName.trim().length === 0 ||
-    lastName.trim().length === 0 ||
-    !USERNAME_PATTERN.test(username) ||
-    password.length < 8
+    lastName.trim().length === 0
   ) {
-    return redirect("/signup?error=1");
+    return redirect("/signup?error=missing-fields");
+  }
+
+  if (!USERNAME_PATTERN.test(username)) {
+    return redirect("/signup?error=invalid-username");
+  }
+
+  if (password.length < 8) {
+    return redirect("/signup?error=short-password");
   }
 
   const user = await createUser(firstName.trim(), lastName.trim(), username, password);
