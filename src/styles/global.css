@@ -284,6 +284,17 @@ select {
   margin: 0 0 var(--space-2);
 }
 
+.prop-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto var(--space-3);
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  background-color: var(--secondary-bg);
+}
+
 .player {
   font-family: var(--font-display);
   font-size: 1.75rem;

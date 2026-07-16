@@ -66,6 +66,7 @@ const users = await listAllUsers();
     <div class="grid">
       {props.map((prop) => (
         <div class="card admin-prop" data-prop={JSON.stringify(prop)}>
+          <img class="prop-avatar" src={prop.playerAvatarUrl ?? "/avatar-placeholder.svg"} alt="" />
           <h1 class="player">{prop.player}</h1>
           <p class="value-stat">{prop.line} {prop.stat}</p>
           <p class="sport">{prop.sport}</p>

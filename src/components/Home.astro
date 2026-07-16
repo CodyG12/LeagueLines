@@ -51,6 +51,7 @@ const heading = sport ? `${sport} Props` : "Player Props";
       <div class="grid">
         {playerProps.map((prop) => (
           <div /*key={prop.id}*/ class="card player-prop">
+            <img class="prop-avatar" src={prop.playerAvatarUrl ?? "/avatar-placeholder.svg"} alt="" />
             <h1 class="player">{prop.player}</h1>
             <p class="value-stat">{prop.line} {prop.stat}</p>
             <p class="sport">{prop.sport}</p>
