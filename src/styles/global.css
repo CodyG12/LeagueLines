@@ -116,6 +116,23 @@ a:hover {
   margin: 0;
 }
 
+.site-footer .footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+.footer-admin-link {
+  font-size: 0.85rem;
+  color: var(--secondary-text);
+  font-weight: 600;
+}
+
+.footer-admin-link:hover {
+  color: var(--primary-text);
+}
+
 .card {
   background-color: var(--secondary-bg);
   padding: var(--space-5);
