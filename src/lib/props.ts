@@ -1,5 +1,6 @@
 import { ObjectId, type Collection } from "mongodb";
 import clientPromise from "./mongodb";
+import { getCollection as getUsersCollection } from "./users";
 
 export type PropStatus = "scheduled" | "live" | "closed";
 export type PropResult = "over" | "under" | "push" | null;
@@ -8,6 +9,7 @@ export interface PlayerPropDoc {
   _id: ObjectId;
   sport: string;
   player: string;
+  playerUserId: ObjectId | null;
   team: string | null;
   stat: string;
   line: number;
@@ -22,6 +24,8 @@ export interface PublicPlayerProp {
   id: string;
   sport: string;
   player: string;
+  playerUserId: string | null;
+  playerAvatarUrl: string | null;
   team: string | null;
   stat: string;
   line: number;
@@ -34,6 +38,7 @@ export interface PublicPlayerProp {
 export interface CreatePropInput {
   sport: string;
   player: string;
+  playerUserId?: string | null;
   team: string | null;
   stat: string;
   line: number;
@@ -43,6 +48,7 @@ export interface CreatePropInput {
 export interface UpdatePropInput {
   sport?: string;
   player?: string;
+  playerUserId?: string | null;
   team?: string | null;
   stat?: string;
   line?: number;
@@ -83,6 +89,8 @@ export function toPublicProp(doc: PlayerPropDoc): PublicPlayerProp {
     id: doc._id.toString(),
     sport: doc.sport,
     player: doc.player,
+    playerUserId: doc.playerUserId ? doc.playerUserId.toString() : null,
+    playerAvatarUrl: null,
     team: doc.team,
     stat: doc.stat,
     line: doc.line,
@@ -93,6 +101,26 @@ export function toPublicProp(doc: PlayerPropDoc): PublicPlayerProp {
   };
 }
 
+async function attachPlayerAvatars(props: PublicPlayerProp[]): Promise<PublicPlayerProp[]> {
+  const ids = Array.from(
+    new Set(props.map((p) => p.playerUserId).filter((id): id is string => id !== null)),
+  );
+  if (ids.length === 0) return props;
+
+  const usersCollection = await getUsersCollection();
+  const users = await usersCollection
+    .find(
+      { _id: { $in: ids.map((id) => new ObjectId(id)) } },
+      { projection: { avatarUrl: 1 } },
+    )
+    .toArray();
+  const avatarById = new Map(users.map((u) => [u._id.toString(), u.avatarUrl ?? null]));
+
+  return props.map((p) =>
+    p.playerUserId ? { ...p, playerAvatarUrl: avatarById.get(p.playerUserId) ?? null } : p,
+  );
+}
+
 export async function listPublicProps(): Promise<PublicPlayerProp[]> {
   const collection = await getCollection();
   await promoteLiveProps(collection);
@@ -100,7 +128,7 @@ export async function listPublicProps(): Promise<PublicPlayerProp[]> {
     .find({ status: "scheduled" })
     .sort({ startTime: 1 })
     .toArray();
-  return docs.map(toPublicProp);
+  return attachPlayerAvatars(docs.map(toPublicProp));
 }
 
 export async function listPublicPropsBySport(sport: string): Promise<PublicPlayerProp[]> {
@@ -110,7 +138,7 @@ export async function listPublicPropsBySport(sport: string): Promise<PublicPlaye
     .find({ status: "scheduled", sport })
     .sort({ startTime: 1 })
     .toArray();
-  return docs.map(toPublicProp);
+  return attachPlayerAvatars(docs.map(toPublicProp));
 }
 
 export async function listDistinctSports(): Promise<string[]> {
@@ -123,7 +151,7 @@ export async function listAllProps(): Promise<PublicPlayerProp[]> {
   const collection = await getCollection();
   await promoteLiveProps(collection);
   const docs = await collection.find({}).sort({ createdAt: -1 }).toArray();
-  return docs.map(toPublicProp);
+  return attachPlayerAvatars(docs.map(toPublicProp));
 }
 
 export async function getPropById(id: string): Promise<PublicPlayerProp | null> {
@@ -131,7 +159,9 @@ export async function getPropById(id: string): Promise<PublicPlayerProp | null> 
   const collection = await getCollection();
   await promoteLiveProps(collection);
   const doc = await collection.findOne({ _id: new ObjectId(id) });
-  return doc ? toPublicProp(doc) : null;
+  if (!doc) return null;
+  const [withAvatar] = await attachPlayerAvatars([toPublicProp(doc)]);
+  return withAvatar;
 }
 
 export async function createProp(input: CreatePropInput): Promise<PublicPlayerProp> {
@@ -141,6 +171,7 @@ export async function createProp(input: CreatePropInput): Promise<PublicPlayerPr
     _id: new ObjectId(),
     sport: input.sport,
     player: input.player,
+    playerUserId: input.playerUserId ? new ObjectId(input.playerUserId) : null,
     team: input.team,
     stat: input.stat,
     line: input.line,
@@ -151,7 +182,8 @@ export async function createProp(input: CreatePropInput): Promise<PublicPlayerPr
     updatedAt: now,
   };
   await collection.insertOne(doc);
-  return toPublicProp(doc);
+  const [withAvatar] = await attachPlayerAvatars([toPublicProp(doc)]);
+  return withAvatar;
 }
 
 export async function updateProp(
@@ -160,12 +192,19 @@ export async function updateProp(
 ): Promise<PublicPlayerProp | null> {
   if (!ObjectId.isValid(id)) return null;
   const collection = await getCollection();
+  const { playerUserId, ...rest } = input;
+  const setDoc: Partial<PlayerPropDoc> & { updatedAt: Date } = { ...rest, updatedAt: new Date() };
+  if (playerUserId !== undefined) {
+    setDoc.playerUserId = playerUserId ? new ObjectId(playerUserId) : null;
+  }
   const updated = await collection.findOneAndUpdate(
     { _id: new ObjectId(id) },
-    { $set: { ...input, updatedAt: new Date() } },
+    { $set: setDoc },
     { returnDocument: "after" },
   );
-  return updated ? toPublicProp(updated) : null;
+  if (!updated) return null;
+  const [withAvatar] = await attachPlayerAvatars([toPublicProp(updated)]);
+  return withAvatar;
 }
 
 export async function deleteProp(id: string): Promise<boolean> {
