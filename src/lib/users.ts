@@ -88,6 +88,12 @@ export async function createUser(
   return toPublicUser(doc);
 }
 
+export async function usernameExists(username: string): Promise<boolean> {
+  const collection = await getCollection();
+  const doc = await collection.findOne({ username: username.toLowerCase() }, { projection: { _id: 1 } });
+  return doc !== null;
+}
+
 export async function verifyUserCredentials(
   username: string,
   password: string,

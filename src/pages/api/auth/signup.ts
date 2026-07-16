@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { createUser } from "../../../lib/users";
+import { createUser, usernameExists } from "../../../lib/users";
 import { USER_COOKIE_NAME, createUserSessionToken } from "../../../lib/userAuth";
 import { uploadAvatar, InvalidAvatarError } from "../../../lib/avatarStorage";
 
@@ -26,6 +26,10 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
 
   if (!USERNAME_PATTERN.test(username)) {
     return redirect("/signup?error=invalid-username");
+  }
+
+  if (await usernameExists(username)) {
+    return redirect("/signup?error=duplicate");
   }
 
   if (password.length < 8) {
