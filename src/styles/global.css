@@ -12,9 +12,12 @@
   --success-color: #30d158;
 
   /* Typography — see DESIGN.md. Erica One is scoped to the brand wordmark only. */
-  --font-display: "General Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-body: "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-num: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display:
+    "General Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-body:
+    "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-num:
+    "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-brand: "Erica One", -apple-system, sans-serif;
 
   /* Structural tokens */
@@ -94,7 +97,7 @@ a:hover {
 }
 
 #footer {
-  position: sticky;
+  position: static;
   bottom: 0;
   width: 100%;
   z-index: 50;
@@ -595,7 +598,11 @@ select {
   align-items: center;
   justify-content: center;
   min-height: calc(100vh - 76px);
-  background: radial-gradient(circle at 50% 40%, rgba(11, 7, 16, 0.35), rgba(11, 7, 16, 0.85));
+  background: radial-gradient(
+    circle at 50% 40%,
+    rgba(11, 7, 16, 0.35),
+    rgba(11, 7, 16, 0.85)
+  );
   padding: var(--space-6) var(--space-5);
 }
 
@@ -710,12 +717,67 @@ select {
   margin-left: auto;
 }
 
+/* Glare sweep on hover — ported from reactbits.dev/animations/glare-hover,
+   using the site's off-white as the glare so it reads as a light-catch,
+   not a new accent color. */
+.nav-glare {
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-glare::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    -45deg,
+    hsla(0, 0%, 100%, 0) 60%,
+    rgba(245, 245, 247, 0.55) 70%,
+    hsla(0, 0%, 100%, 0),
+    hsla(0, 0%, 100%, 0) 100%
+  );
+  background-size:
+    300% 300%,
+    100% 100%;
+  background-repeat: no-repeat;
+  background-position:
+    -100% -100%,
+    0 0;
+  transition: background-position 650ms ease;
+}
+
+.nav-glare:hover::before {
+  background-position:
+    100% 100%,
+    0 0;
+}
+
+/* Simple lift on hover, same spring easing as .card. */
+.nav-raise {
+  display: inline-flex;
+  transition: transform 0.2s var(--ease-spring);
+}
+
+.nav-raise:hover {
+  transform: translateY(-2px);
+}
+
+.nav-raise:active {
+  transform: translateY(0);
+}
+
 .site-brand {
   font-family: var(--font-brand);
   font-weight: 400;
   font-size: 1.35rem;
   color: var(--highlight-color);
   letter-spacing: 0;
+}
+
+.site-brand:hover,
+.my-bets-link:hover {
+  text-decoration: none;
 }
 
 .site-brand-league {
@@ -726,7 +788,6 @@ select {
   /* Erica One ships a single 400 weight, so font-weight: 700 doesn't
      synthesize in Chrome — thicken the strokes directly to match League. */
   -webkit-text-stroke: 0.6px currentColor;
-  text-stroke: 0.6px currentColor;
 }
 
 .league-tabs {
@@ -910,7 +971,11 @@ select {
   top: var(--space-5);
   left: 50%;
   transform: translateX(-50%) translateY(-20px);
-  background: linear-gradient(135deg, var(--accent-purple), var(--highlight-color));
+  background: linear-gradient(
+    135deg,
+    var(--accent-purple),
+    var(--highlight-color)
+  );
   color: var(--primary-bg);
   font-weight: 800;
   padding: var(--space-4) var(--space-6);
