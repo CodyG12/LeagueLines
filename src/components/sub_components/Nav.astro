@@ -19,7 +19,7 @@ const pendingCount = user ? await countPendingBetsForUser(user.id) : 0;
 
 <nav class="site-nav">
   <div class="nav-left">
-    <a href="/" class="site-brand">LeagueLines</a>
+    <a href="/" class="site-brand"><span class="site-brand-league">League</span><span class="site-brand-lines">Lines</span></a>
     {
       user && (
         <a href="/my-bets" class="my-bets-link">

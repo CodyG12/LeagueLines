@@ -76,6 +76,13 @@ body {
   pointer-events: none;
 }
 
+/* Beams is lit (directional lights on displaced normals) rather than a flat
+   noise/gradient fill, so it reads much dimmer than Grainient/Lightfall at
+   the shared 0.4 opacity — give it more room. */
+.page-bg.beams-page-bg {
+  opacity: 0.7;
+}
+
 a {
   color: var(--highlight-color);
   text-decoration: none;
@@ -709,6 +716,17 @@ select {
   font-size: 1.35rem;
   color: var(--highlight-color);
   letter-spacing: 0;
+}
+
+.site-brand-league {
+  color: var(--primary-text);
+}
+
+.site-brand-lines {
+  /* Erica One ships a single 400 weight, so font-weight: 700 doesn't
+     synthesize in Chrome — thicken the strokes directly to match League. */
+  -webkit-text-stroke: 0.6px currentColor;
+  text-stroke: 0.6px currentColor;
 }
 
 .league-tabs {

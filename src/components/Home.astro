@@ -1,7 +1,7 @@
 ---
 import Footer from "./sub_components/Footer.astro";
 import Header from "./sub_components/Header.astro";
-import Grainient from "./react/Grainient";
+import Beams from "./react/Beams";
 import { listPublicProps, listPublicPropsBySport } from "../lib/props";
 
 interface Props {
@@ -25,8 +25,20 @@ const heading = sport ? `${sport} Props` : "Player Props";
     <script type="module" src="/src/scripts/betSlip.js"></script>
   </head>
   <body data-logged-in={Astro.locals.user ? "true" : "false"}>
-    <div class="page-bg">
-      <Grainient client:load color1="#d4a72c" color2="#7c5cfc" color3="#050506" />
+    <div class="page-bg beams-page-bg">
+      <Beams
+        client:load
+        beamWidth={2}
+        beamHeight={15}
+        beamNumber={12}
+        lightColor="#d4a72c"
+        secondaryLightColor="#7c5cfc"
+        speed={2}
+        noiseIntensity={1.75}
+        scale={0.2}
+        rotation={0}
+        backgroundColor="#050506"
+      />
     </div>
 
     <!-- Header -->
