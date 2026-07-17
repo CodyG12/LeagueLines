@@ -1021,3 +1021,281 @@ select {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+
+/* ==========================================================================
+   Player-prop card — ported from reactbits.dev's Profile Card, retinted to
+   the project palette (gold + purple instead of a full rainbow) and resized
+   to sit in a repeating grid instead of a single hero card. The pointer
+   tilt is driven by src/scripts/profileCardTilt.js, which sets the
+   pointer, rotate and background custom properties below.
+   Used only by Home.astro and admin/props.astro — src/pages/my-bets.astro
+   still uses the plain .card system and is untouched by any of this.
+   ========================================================================== */
+
+.pc-card-wrapper {
+  --pointer-from-top: 0.5;
+  --pointer-from-left: 0.5;
+  --rotate-x: 0deg;
+  --rotate-y: 0deg;
+  --card-radius: var(--radius-lg);
+  perspective: 700px;
+  transform: translate3d(0, 0, 0.1px);
+  position: relative;
+  touch-action: pan-y;
+}
+
+.pc-card-shell {
+  position: relative;
+  z-index: 1;
+}
+
+.pc-card {
+  width: 100%;
+  aspect-ratio: 0.718;
+  display: grid;
+  border-radius: var(--card-radius);
+  position: relative;
+  background-color: var(--primary-bg);
+  box-shadow: rgba(0, 0, 0, 0.8) calc((var(--pointer-from-left) * 10px) - 3px)
+    calc((var(--pointer-from-top) * 20px) - 6px) 20px -5px;
+  transition: transform 1s var(--ease-spring);
+  transform: translateZ(0) rotateX(0deg) rotateY(0deg);
+  backface-visibility: hidden;
+  overflow: hidden;
+}
+
+.pc-card-shell:hover .pc-card,
+.pc-card-shell.active .pc-card {
+  transition: none;
+  transform: translateZ(0) rotateX(var(--rotate-y)) rotateY(var(--rotate-x));
+}
+
+.pc-card * {
+  display: grid;
+  grid-area: 1/-1;
+  border-radius: var(--card-radius);
+  pointer-events: none;
+}
+
+.pc-inside {
+  inset: 0;
+  position: absolute;
+  background-image: linear-gradient(145deg, rgba(124, 92, 252, 0.28) 0%, rgba(212, 167, 44, 0.22) 100%);
+  background-color: var(--primary-bg);
+}
+
+.pc-avatar-content {
+  mix-blend-mode: luminosity;
+  overflow: visible;
+  transform: translateZ(2);
+  backface-visibility: hidden;
+}
+
+.pc-avatar-content .avatar {
+  width: 100%;
+  height: 50%;
+  position: absolute;
+  top: 26%;
+  left: 0;
+  object-fit: cover;
+  object-position: center;
+  transform: translateX(calc((var(--pointer-from-left) - 0.5) * 6px)) translateZ(0);
+  backface-visibility: hidden;
+  will-change: transform;
+  transition: transform 120ms ease-out;
+}
+
+.pc-content:not(.pc-avatar-content) {
+  max-height: 100%;
+  overflow: hidden;
+  text-align: center;
+  position: relative;
+  transform: translate3d(
+    calc(var(--pointer-from-left) * -6px + 3px),
+    calc(var(--pointer-from-top) * -6px + 3px),
+    0.1px
+  );
+  z-index: 5;
+}
+
+.pc-details {
+  width: 100%;
+  position: absolute;
+  top: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 var(--space-4);
+}
+
+.pc-details h3 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--primary-text);
+  text-shadow:
+    0 2px 10px rgba(0, 0, 0, 0.7),
+    0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.pc-details p {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--highlight-color);
+  text-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.7),
+    0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.pc-user-info {
+  position: absolute;
+  --ui-inset: var(--space-4);
+  bottom: var(--ui-inset);
+  left: var(--ui-inset);
+  right: var(--ui-inset);
+  z-index: 2;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: calc(max(0px, var(--card-radius) - var(--ui-inset) + 6px));
+  padding: var(--space-2) var(--space-3);
+}
+
+.pc-user-details {
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.pc-mini-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  flex-shrink: 0;
+}
+
+.pc-mini-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.pc-user-text {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.pc-handle {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.pc-status {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.92);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.pc-bet-options {
+  gap: 2px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-pill);
+  padding: 3px;
+  flex-shrink: 0;
+}
+
+/* .pc-card * (above) resets every descendant to display:grid,
+   pointer-events:none and a 24px border-radius so the shine/glare/content
+   layers can stack in one grid cell. The interactive bar and its contents
+   need to opt back out of that reset explicitly. */
+.pc-user-info,
+.pc-user-info * {
+  pointer-events: auto;
+}
+
+.pc-user-info,
+.pc-user-details,
+.pc-user-text,
+.pc-mini-avatar,
+.pc-bet-options {
+  display: flex;
+}
+
+.pc-user-info .status-pill {
+  display: inline-flex;
+  border-radius: var(--radius-pill);
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.pc-bet-options .over-btn,
+.pc-bet-options .under-btn {
+  border-radius: var(--radius-pill);
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.75rem;
+  background-color: transparent;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.pc-bet-options .over-btn.selected,
+.pc-bet-options .under-btn.selected {
+  background-color: var(--highlight-color);
+  color: var(--primary-bg);
+}
+
+.pc-admin-panel {
+  background-color: var(--secondary-bg);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin-top: var(--space-3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pc-card {
+    transition: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .pc-user-info {
+    --ui-inset: var(--space-3);
+    padding: var(--space-2);
+  }
+
+  .pc-mini-avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .pc-details {
+    top: var(--space-4);
+  }
+
+  .pc-details h3 {
+    font-size: 1.3rem;
+  }
+}

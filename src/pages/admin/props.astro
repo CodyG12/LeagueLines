@@ -11,6 +11,7 @@ const users = await listAllUsers();
 
 <Layout>
   <script type="module" src="/src/scripts/adminProps.js"></script>
+  <script type="module" src="/src/scripts/profileCardTilt.js"></script>
   <main class="container admin-props">
     <div class="admin-header">
       <h2 class="title">Manage Player Props</h2>
@@ -65,30 +66,55 @@ const users = await listAllUsers();
 
     <div class="grid">
       {props.map((prop) => (
-        <div class="card admin-prop" data-prop={JSON.stringify(prop)}>
-          <img class="prop-avatar" src={prop.playerAvatarUrl ?? "/avatar-placeholder.svg"} alt="" />
-          <h1 class="player">{prop.player}</h1>
-          <p class="value-stat">{prop.line} {prop.stat}</p>
-          <p class="sport">{prop.sport}</p>
-          <p class="time">{prop.displayTime}</p>
-          <p class="status-badge">
-            <span class={`status-pill status-pill--${prop.status}`}>{prop.status}</span>
-          </p>
-
-          <div class="admin-prop-actions">
-            <button type="button" class="edit-btn secondary-btn">Edit</button>
-            <button type="button" class="delete-btn">Delete</button>
+        <div class="admin-prop" data-prop={JSON.stringify(prop)}>
+          <div class="pc-card-wrapper">
+            <div class="pc-card-shell">
+              <section class="pc-card">
+                <div class="pc-inside">
+                  <div class="pc-content pc-avatar-content">
+                    {prop.playerAvatarUrl && (
+                      <img class="avatar" src={prop.playerAvatarUrl} alt="" loading="lazy" />
+                    )}
+                    <div class="pc-user-info">
+                      <div class="pc-user-details">
+                        <div class="pc-mini-avatar">
+                          <img src={prop.playerAvatarUrl ?? "/avatar-placeholder.svg"} alt="" loading="lazy" />
+                        </div>
+                        <div class="pc-user-text">
+                          <div class="pc-handle">{prop.sport}</div>
+                          <div class="pc-status">{prop.displayTime}</div>
+                        </div>
+                      </div>
+                      <span class={`status-pill status-pill--${prop.status}`}>{prop.status}</span>
+                    </div>
+                  </div>
+                  <div class="pc-content">
+                    <div class="pc-details">
+                      <h3>{prop.player}</h3>
+                      <p>{prop.line} {prop.stat}</p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
           </div>
 
-          <form class="close-form">
-            <select name="result" required>
-              <option value="" disabled selected>Grade result...</option>
-              <option value="over">Over</option>
-              <option value="under">Under</option>
-              <option value="push">Push</option>
-            </select>
-            <button type="submit" class="secondary-btn">Close & Grade</button>
-          </form>
+          <div class="pc-admin-panel">
+            <div class="admin-prop-actions">
+              <button type="button" class="edit-btn secondary-btn">Edit</button>
+              <button type="button" class="delete-btn">Delete</button>
+            </div>
+
+            <form class="close-form">
+              <select name="result" required>
+                <option value="" disabled selected>Grade result...</option>
+                <option value="over">Over</option>
+                <option value="under">Under</option>
+                <option value="push">Push</option>
+              </select>
+              <button type="submit" class="secondary-btn">Close & Grade</button>
+            </form>
+          </div>
         </div>
       ))}
     </div>

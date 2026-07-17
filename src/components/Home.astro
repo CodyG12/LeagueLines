@@ -23,6 +23,7 @@ const heading = sport ? `${sport} Props` : "Player Props";
     <script type="module" src="/src/scripts/modal.js"></script>
     <script type="module" src="/src/scripts/buttonColor.js"></script>
     <script type="module" src="/src/scripts/betSlip.js"></script>
+    <script type="module" src="/src/scripts/profileCardTilt.js"></script>
   </head>
   <body data-logged-in={Astro.locals.user ? "true" : "false"}>
     <div class="page-bg beams-page-bg">
@@ -50,22 +51,38 @@ const heading = sport ? `${sport} Props` : "Player Props";
 
       <div class="grid">
         {playerProps.map((prop) => (
-          <div /*key={prop.id}*/ class="card player-prop">
-            <img class="prop-avatar" src={prop.playerAvatarUrl ?? "/avatar-placeholder.svg"} alt="" />
-            <h1 class="player">{prop.player}</h1>
-            <p class="value-stat">{prop.line} {prop.stat}</p>
-            <p class="sport">{prop.sport}</p>
-            <p class="time">
-              {prop.displayTime}
-            </p>
-
-            <div class="bet-options">
-              <button data-prop={JSON.stringify(prop)} class="over-btn">
-                <p>Over</p>
-              </button>
-              <button data-prop={JSON.stringify(prop)} class="under-btn">
-                <p>Under</p>
-              </button>
+          <div /*key={prop.id}*/ class="pc-card-wrapper player-prop">
+            <div class="pc-card-shell">
+              <section class="pc-card">
+                <div class="pc-inside">
+                  <div class="pc-content pc-avatar-content">
+                    {prop.playerAvatarUrl && (
+                      <img class="avatar" src={prop.playerAvatarUrl} alt="" loading="lazy" />
+                    )}
+                    <div class="pc-user-info">
+                      <div class="pc-user-details">
+                        <div class="pc-mini-avatar">
+                          <img src={prop.playerAvatarUrl ?? "/avatar-placeholder.svg"} alt="" loading="lazy" />
+                        </div>
+                        <div class="pc-user-text">
+                          <div class="pc-handle">{prop.sport}</div>
+                          <div class="pc-status">{prop.displayTime}</div>
+                        </div>
+                      </div>
+                      <div class="pc-bet-options">
+                        <button data-prop={JSON.stringify(prop)} class="over-btn">Over</button>
+                        <button data-prop={JSON.stringify(prop)} class="under-btn">Under</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="pc-content">
+                    <div class="pc-details">
+                      <h3>{prop.player}</h3>
+                      <p>{prop.line} {prop.stat}</p>
+                    </div>
+                  </div>
+                </div>
+              </section>
             </div>
           </div>
         ))}
