@@ -1085,7 +1085,6 @@ select {
 }
 
 .pc-avatar-content {
-  mix-blend-mode: luminosity;
   overflow: visible;
   transform: translateZ(2);
   backface-visibility: hidden;
@@ -1151,27 +1150,35 @@ select {
     0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
-.pc-user-info {
+.pc-details .pc-time {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.75);
+  text-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.7),
+    0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.pc-bottom {
   position: absolute;
-  --ui-inset: var(--space-4);
-  bottom: var(--ui-inset);
-  left: var(--ui-inset);
-  right: var(--ui-inset);
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 2;
+  flex-direction: column;
+}
+
+.pc-user-info {
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
+  margin: 0 var(--space-4) var(--space-3);
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(30px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: calc(max(0px, var(--card-radius) - var(--ui-inset) + 6px));
+  border-radius: calc(max(0px, var(--card-radius) - var(--space-4) + 6px));
   padding: var(--space-2) var(--space-3);
-}
-
-.pc-user-details {
-  align-items: center;
-  gap: var(--space-2);
-  min-width: 0;
 }
 
 .pc-mini-avatar {
@@ -1190,55 +1197,35 @@ select {
   border-radius: 50%;
 }
 
-.pc-user-text {
-  align-items: flex-start;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
-}
-
 .pc-handle {
-  font-size: 0.7rem;
+  flex: 1;
+  min-width: 0;
+  font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: rgba(255, 255, 255, 0.65);
+  color: rgba(255, 255, 255, 0.85);
   line-height: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 100%;
-}
-
-.pc-status {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.92);
-  line-height: 1;
-  white-space: nowrap;
 }
 
 .pc-bet-options {
-  gap: 2px;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: var(--radius-pill);
-  padding: 3px;
-  flex-shrink: 0;
+  width: 100%;
 }
 
 /* .pc-card * (above) resets every descendant to display:grid,
    pointer-events:none and a 24px border-radius so the shine/glare/content
    layers can stack in one grid cell. The interactive bar and its contents
    need to opt back out of that reset explicitly. */
-.pc-user-info,
-.pc-user-info * {
+.pc-bottom,
+.pc-bottom * {
   pointer-events: auto;
 }
 
+.pc-bottom,
 .pc-user-info,
-.pc-user-details,
-.pc-user-text,
 .pc-mini-avatar,
 .pc-bet-options {
   display: flex;
@@ -1253,11 +1240,22 @@ select {
 
 .pc-bet-options .over-btn,
 .pc-bet-options .under-btn {
-  border-radius: var(--radius-pill);
-  padding: var(--space-2) var(--space-3);
-  font-size: 0.75rem;
+  flex: 1;
+  border-radius: 0;
+  padding: var(--space-3);
+  font-size: 0.85rem;
   background-color: transparent;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--primary-text);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.pc-bet-options .over-btn {
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom-left-radius: var(--card-radius);
+}
+
+.pc-bet-options .under-btn {
+  border-bottom-right-radius: var(--card-radius);
 }
 
 .pc-bet-options .over-btn.selected,

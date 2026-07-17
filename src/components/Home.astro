@@ -59,15 +59,12 @@ const heading = sport ? `${sport} Props` : "Player Props";
                     {prop.playerAvatarUrl && (
                       <img class="avatar" src={prop.playerAvatarUrl} alt="" loading="lazy" />
                     )}
-                    <div class="pc-user-info">
-                      <div class="pc-user-details">
+                    <div class="pc-bottom">
+                      <div class="pc-user-info">
                         <div class="pc-mini-avatar">
                           <img src={prop.playerAvatarUrl ?? "/avatar-placeholder.svg"} alt="" loading="lazy" />
                         </div>
-                        <div class="pc-user-text">
-                          <div class="pc-handle">{prop.sport}</div>
-                          <div class="pc-status">{prop.displayTime}</div>
-                        </div>
+                        <div class="pc-handle">{prop.sport}</div>
                       </div>
                       <div class="pc-bet-options">
                         <button data-prop={JSON.stringify(prop)} class="over-btn">Over</button>
@@ -79,6 +76,7 @@ const heading = sport ? `${sport} Props` : "Player Props";
                     <div class="pc-details">
                       <h3>{prop.player}</h3>
                       <p>{prop.line} {prop.stat}</p>
+                      <span class="pc-time">{prop.displayTime}</span>
                     </div>
                   </div>
                 </div>
