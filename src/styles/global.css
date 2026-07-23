@@ -1310,3 +1310,37 @@ select {
     font-size: 1.3rem;
   }
 }
+
+.leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  text-align: left;
+}
+
+.leaderboard-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  background-color: var(--secondary-bg);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  box-shadow: var(--shadow-card);
+}
+
+.leaderboard-rank {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--highlight-color);
+  width: 2ch;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.leaderboard-name {
+  flex: 1;
+  font-weight: 600;
+}

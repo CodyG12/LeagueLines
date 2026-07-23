@@ -1,0 +1,26 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Nav from "../components/sub_components/Nav.astro";
+import { listAllUsers } from "../lib/users";
+
+const users = await listAllUsers();
+const ranked = [...users].sort((a, b) => b.units - a.units);
+---
+
+<Layout>
+  <Nav showCategories={false} />
+  <main class="container">
+    <h2 class="title">Leaderboard</h2>
+    <div class="leaderboard-list">
+      {ranked.map((user, index) => (
+        <div class="leaderboard-row">
+          <span class="leaderboard-rank">{index + 1}</span>
+          <img class="prop-avatar" src={user.avatarUrl ?? "/avatar-placeholder.svg"} alt="" loading="lazy" />
+          <span class="leaderboard-name">{user.firstName} {user.lastName} (@{user.username})</span>
+          <span class="units-pill">{user.units} units</span>
+        </div>
+      ))}
+      {ranked.length === 0 && <p>No users yet.</p>}
+    </div>
+  </main>
+</Layout>
