@@ -382,7 +382,7 @@ select {
 /* Bottom-sheet bet slip */
 .modal-div {
   position: fixed;
-  bottom: 0;
+  bottom: var(--bottom-nav-height);
   left: 0;
   right: 0;
   z-index: 200;
