@@ -904,56 +904,6 @@ select {
   border-radius: var(--radius-pill);
 }
 
-.account-menu {
-  position: relative;
-}
-
-.account-summary {
-  list-style: none;
-  cursor: pointer;
-  color: var(--primary-text);
-  font-weight: 600;
-  font-size: 0.9rem;
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-pill);
-  background-color: rgba(255, 255, 255, 0.08);
-}
-
-.account-summary::-webkit-details-marker {
-  display: none;
-}
-
-.account-summary:hover {
-  background-color: rgba(255, 255, 255, 0.14);
-}
-
-.account-menu[open] .account-summary {
-  background-color: var(--highlight-color);
-  color: var(--primary-bg);
-}
-
-.account-dropdown {
-  position: absolute;
-  top: calc(100% + var(--space-2));
-  right: 0;
-  z-index: 110;
-  background-color: var(--secondary-bg);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-sm);
-  padding: var(--space-2);
-  box-shadow: var(--shadow-card);
-  min-width: 140px;
-}
-
-.account-dropdown form {
-  margin: 0;
-}
-
-.account-dropdown .btn-outline {
-  width: 100%;
-  justify-content: center;
-}
-
 /* Bet slip */
 .bet-slip-leg {
   display: flex;

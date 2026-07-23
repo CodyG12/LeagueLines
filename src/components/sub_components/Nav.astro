@@ -52,19 +52,7 @@ function sportIcon(sport: string): string {
     <div class="nav-right">
       {
         user ? (
-          <>
-            <span class="units-pill">{user.units} units</span>
-            <details class="account-menu">
-              <summary class="account-summary">{user.username}</summary>
-              <div class="account-dropdown">
-                <form method="POST" action="/api/auth/logout" data-astro-reload>
-                  <button type="submit" class="btn-outline">
-                    Log Out
-                  </button>
-                </form>
-              </div>
-            </details>
-          </>
+          <span class="units-pill">{user.units} units</span>
         ) : (
           <>
             <a href="/login" class="btn-outline">
