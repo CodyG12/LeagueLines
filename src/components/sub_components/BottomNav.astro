@@ -1,4 +1,6 @@
 ---
+import { countPendingBetsForUser } from "../../lib/bets";
+
 interface Tab {
   href: string;
   label: string;
@@ -18,6 +20,10 @@ function isActive(href: string): boolean {
   if (href === "/") return currentPath === "/";
   return currentPath === href || currentPath.startsWith(`${href}/`);
 }
+
+const user = Astro.locals.user;
+const pendingCount = user ? await countPendingBetsForUser(user.id) : 0;
+const pendingLabel = pendingCount > 9 ? "9+" : String(pendingCount);
 ---
 
 <nav class="bottom-nav" aria-label="Primary">
@@ -35,6 +41,9 @@ function isActive(href: string): boolean {
             <circle cx="12" cy="12" r="9" />
             <path d="M8 12.5l2.5 2.5L16 9.5" />
           </svg>
+        )}
+        {tab.icon === "bets" && pendingCount > 0 && (
+          <span class="bottom-nav-badge">{pendingLabel}</span>
         )}
         {tab.icon === "leaderboard" && (
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
