@@ -23,7 +23,7 @@ import { ViewTransitions } from "astro:transitions";
     <title>LeagueLines</title>
     <ViewTransitions />
   </head>
-  <body>
+  <body data-logged-in={Astro.locals.user ? "true" : "false"}>
     <slot />
   </body>
 </html>
