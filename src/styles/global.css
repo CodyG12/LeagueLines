@@ -732,18 +732,21 @@ select {
 }
 
 /* Top nav */
-.site-nav {
+.site-header {
   position: sticky;
   top: 0;
   z-index: 100;
+  background-color: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.site-nav {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: var(--space-3) var(--space-5);
   padding: var(--space-4) var(--space-5);
-  background-color: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .nav-left {
@@ -832,34 +835,53 @@ select {
   -webkit-text-stroke: 0.6px currentColor;
 }
 
+.league-tabs-row {
+  padding: 0 var(--space-5) var(--space-4);
+}
+
 .league-tabs {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-wrap: nowrap;
   gap: var(--space-2);
-  flex: 1;
-  min-width: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.league-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .league-tab {
-  color: var(--secondary-text);
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-pill);
-  font-weight: 600;
-  font-size: 0.9rem;
+  flex-shrink: 0;
   display: inline-flex;
   align-items: center;
+  gap: var(--space-2);
+  color: var(--secondary-text);
+  background-color: var(--surface-2);
+  border: 1.5px solid transparent;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.league-tab-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
 .league-tab:hover {
-  background-color: rgba(255, 255, 255, 0.08);
   color: var(--primary-text);
+  border-color: rgba(255, 255, 255, 0.15);
   text-decoration: none;
 }
 
 .league-tab.active {
-  background-color: var(--highlight-color);
-  color: var(--primary-bg);
+  background-color: color-mix(in srgb, var(--highlight-color) 16%, var(--surface-2));
+  border-color: var(--highlight-color);
+  color: var(--primary-text);
 }
 
 .my-bets-link {
@@ -930,24 +952,6 @@ select {
 .account-dropdown .btn-outline {
   width: 100%;
   justify-content: center;
-}
-
-@media (max-width: 640px) {
-  .league-tabs {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    max-width: 100%;
-  }
-
-  .league-tabs::-webkit-scrollbar {
-    display: none;
-  }
-
-  .league-tab {
-    flex-shrink: 0;
-  }
 }
 
 /* Bet slip */
