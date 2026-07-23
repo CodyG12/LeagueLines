@@ -66,7 +66,7 @@ function resetForm() {
 function populateFormForEdit(prop) {
   idField.value = prop.id;
   document.getElementById("sport").value = prop.sport;
-  document.getElementById("player").value = prop.player;
+  document.getElementById("player").value = prop.playerUserId ? `user:${prop.playerUserId}` : prop.player;
   document.getElementById("team").value = prop.team ?? "";
   document.getElementById("stat").value = prop.stat;
   document.getElementById("line").value = prop.line;
@@ -84,9 +84,15 @@ if (form) {
     errorBox.textContent = "";
 
     const startTimeValue = document.getElementById("startTime").value;
+    const playerSelect = document.getElementById("player");
+    const playerRaw = playerSelect.value;
+    const isRegisteredUser = playerRaw.startsWith("user:");
     const body = {
       sport: document.getElementById("sport").value,
-      player: document.getElementById("player").value,
+      player: isRegisteredUser
+        ? playerSelect.options[playerSelect.selectedIndex].textContent
+        : playerRaw,
+      playerUserId: isRegisteredUser ? playerRaw.slice("user:".length) : null,
       team: document.getElementById("team").value || null,
       stat: document.getElementById("stat").value,
       line: Number(document.getElementById("line").value),
@@ -130,7 +136,7 @@ function optionValues(selectId, fallback) {
   const values = select
     ? Array.from(select.options)
         .map((opt) => opt.value)
-        .filter((value) => value && value !== ADD_NEW_VALUE)
+        .filter((value) => value && value !== ADD_NEW_VALUE && !value.startsWith("user:"))
     : [];
   return values.length > 0 ? values : fallback;
 }

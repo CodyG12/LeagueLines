@@ -1,4 +1,5 @@
 import type { APIRoute } from "astro";
+import { ObjectId } from "mongodb";
 import {
   deleteProp,
   getPropById,
@@ -7,6 +8,7 @@ import {
   type UpdatePropInput,
 } from "../../../../lib/props";
 import { settleBetsForProp } from "../../../../lib/bets";
+import { getUserById } from "../../../../lib/users";
 
 const VALID_RESULTS: PropResult[] = ["over", "under", "push"];
 
@@ -29,6 +31,14 @@ function parseUpdateInput(body: unknown): UpdatePropInput | string {
   if (b.player !== undefined) {
     if (typeof b.player !== "string" || b.player.trim() === "") return "player must be a non-empty string";
     input.player = b.player;
+  }
+  if (b.playerUserId !== undefined) {
+    if (b.playerUserId !== null) {
+      if (typeof b.playerUserId !== "string" || !ObjectId.isValid(b.playerUserId)) {
+        return "playerUserId must be a valid id or null";
+      }
+    }
+    input.playerUserId = b.playerUserId as string | null;
   }
   if (b.stat !== undefined) {
     if (typeof b.stat !== "string" || b.stat.trim() === "") return "stat must be a non-empty string";
@@ -77,6 +87,11 @@ export const PATCH: APIRoute = async ({ params, request }) => {
   const body = await request.json().catch(() => null);
   const parsed = parseUpdateInput(body);
   if (typeof parsed === "string") return jsonResponse({ error: parsed }, 400);
+
+  if (parsed.playerUserId) {
+    const user = await getUserById(parsed.playerUserId);
+    if (!user) return jsonResponse({ error: "playerUserId does not reference an existing user" }, 400);
+  }
 
   const prop = await updateProp(params.id!, parsed);
   if (!prop) return jsonResponse({ error: "Not found" }, 404);

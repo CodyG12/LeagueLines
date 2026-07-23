@@ -1,5 +1,7 @@
 import type { APIRoute } from "astro";
+import { ObjectId } from "mongodb";
 import { createProp, listAllProps, type CreatePropInput } from "../../../../lib/props";
+import { getUserById } from "../../../../lib/users";
 
 function jsonResponse(body: unknown, status: number): Response {
   return new Response(JSON.stringify(body), {
@@ -23,9 +25,18 @@ function parseCreateInput(body: unknown): CreatePropInput | string {
   const startTime = new Date(String(b.startTime));
   if (Number.isNaN(startTime.getTime())) return "startTime must be a valid date";
 
+  let playerUserId: string | null = null;
+  if (b.playerUserId !== undefined && b.playerUserId !== null) {
+    if (typeof b.playerUserId !== "string" || !ObjectId.isValid(b.playerUserId)) {
+      return "playerUserId must be a valid id";
+    }
+    playerUserId = b.playerUserId;
+  }
+
   return {
     sport: b.sport,
     player: b.player,
+    playerUserId,
     stat: b.stat,
     line: b.line,
     team: (b.team as string | null | undefined) ?? null,
@@ -42,6 +53,11 @@ export const POST: APIRoute = async ({ request }) => {
   const body = await request.json().catch(() => null);
   const parsed = parseCreateInput(body);
   if (typeof parsed === "string") return jsonResponse({ error: parsed }, 400);
+
+  if (parsed.playerUserId) {
+    const user = await getUserById(parsed.playerUserId);
+    if (!user) return jsonResponse({ error: "playerUserId does not reference an existing user" }, 400);
+  }
 
   const prop = await createProp(parsed);
   return jsonResponse({ prop }, 201);

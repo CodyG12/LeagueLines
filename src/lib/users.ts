@@ -10,6 +10,7 @@ export interface UserDoc {
   lastName: string;
   username: string;
   passwordHash: string;
+  avatarUrl: string | null;
   units: number;
   createdAt: Date;
   updatedAt: Date;
@@ -20,6 +21,7 @@ export interface PublicUser {
   firstName: string;
   lastName: string;
   username: string;
+  avatarUrl: string | null;
   units: number;
 }
 
@@ -48,6 +50,7 @@ export function toPublicUser(doc: UserDoc): PublicUser {
     firstName: doc.firstName,
     lastName: doc.lastName,
     username: doc.username,
+    avatarUrl: doc.avatarUrl ?? null,
     units: doc.units,
   };
 }
@@ -57,6 +60,7 @@ export async function createUser(
   lastName: string,
   username: string,
   password: string,
+  avatarUrl: string | null = null,
 ): Promise<PublicUser | "duplicate"> {
   const collection = await getCollection();
   const now = new Date();
@@ -66,6 +70,7 @@ export async function createUser(
     lastName,
     username: username.toLowerCase(),
     passwordHash: hashPassword(password),
+    avatarUrl,
     units: STARTING_UNITS,
     createdAt: now,
     updatedAt: now,
@@ -81,6 +86,12 @@ export async function createUser(
   }
 
   return toPublicUser(doc);
+}
+
+export async function usernameExists(username: string): Promise<boolean> {
+  const collection = await getCollection();
+  const doc = await collection.findOne({ username: username.toLowerCase() }, { projection: { _id: 1 } });
+  return doc !== null;
 }
 
 export async function verifyUserCredentials(
@@ -99,6 +110,12 @@ export async function getUserById(id: string): Promise<PublicUser | null> {
   const collection = await getCollection();
   const doc = await collection.findOne({ _id: new ObjectId(id) });
   return doc ? toPublicUser(doc) : null;
+}
+
+export async function listAllUsers(): Promise<PublicUser[]> {
+  const collection = await getCollection();
+  const docs = await collection.find({}).sort({ firstName: 1, lastName: 1 }).toArray();
+  return docs.map(toPublicUser);
 }
 
 export async function debitUnits(userId: string, amount: number): Promise<PublicUser | null> {

@@ -1,0 +1,26 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Nav from "../components/sub_components/Nav.astro";
+
+if (!Astro.locals.user) {
+  return Astro.redirect("/login");
+}
+
+const user = Astro.locals.user;
+---
+
+<Layout>
+  <Nav showCategories={false} />
+  <main class="container admin-login">
+    <h2 class="title">Account</h2>
+    <div class="card account-card">
+      <img class="prop-avatar" src={user.avatarUrl ?? "/avatar-placeholder.svg"} alt="" loading="lazy" />
+      <h1 class="player">{user.firstName} {user.lastName}</h1>
+      <p class="time">@{user.username}</p>
+      <p class="units-pill">{user.units} units</p>
+      <form method="POST" action="/api/auth/logout" data-astro-reload>
+        <button type="submit" class="btn-outline">Log Out</button>
+      </form>
+    </div>
+  </main>
+</Layout>

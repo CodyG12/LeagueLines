@@ -11,7 +11,9 @@ const error = Astro.url.searchParams.get("error");
     {error === "missing-fields" && <p class="form-error">Please fill out all fields.</p>}
     {error === "invalid-username" && <p class="form-error">Username must be 3–20 characters, using only letters, numbers, and underscores.</p>}
     {error === "short-password" && <p class="form-error">Password must be at least 8 characters.</p>}
-    <form method="POST" action="/api/auth/signup" class="admin-form" data-astro-reload>
+    {error === "invalid-avatar-type" && <p class="form-error">Profile picture must be a PNG, JPEG, WEBP, or GIF image.</p>}
+    {error === "avatar-too-large" && <p class="form-error">Profile picture must be smaller than 5MB.</p>}
+    <form method="POST" action="/api/auth/signup" class="admin-form" enctype="multipart/form-data" data-astro-reload>
       <label for="firstName">First Name</label>
       <input type="text" id="firstName" name="firstName" required autofocus />
       <label for="lastName">Last Name</label>
@@ -29,6 +31,8 @@ const error = Astro.url.searchParams.get("error");
       />
       <label for="password">Password</label>
       <input type="password" id="password" name="password" minlength="8" required />
+      <label for="avatar">Profile Picture (optional)</label>
+      <input type="file" id="avatar" name="avatar" accept="image/png,image/jpeg,image/webp,image/gif" />
       <button type="submit">Sign Up</button>
     </form>
     <p><a href="/login">Already have an account? Log in</a></p>

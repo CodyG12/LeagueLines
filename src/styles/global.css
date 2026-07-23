@@ -12,9 +12,12 @@
   --success-color: #30d158;
 
   /* Typography — see DESIGN.md. Erica One is scoped to the brand wordmark only. */
-  --font-display: "General Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-body: "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-num: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display:
+    "General Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-body:
+    "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-num:
+    "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-brand: "Erica One", -apple-system, sans-serif;
 
   /* Structural tokens */
@@ -35,6 +38,8 @@
   --shadow-elevated: 0 20px 48px rgba(0, 0, 0, 0.45);
 
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --bottom-nav-height: calc(64px + env(safe-area-inset-bottom, 0px));
+  --bet-slip-bar-height: 72px;
 }
 
 *,
@@ -76,6 +81,13 @@ body {
   pointer-events: none;
 }
 
+/* Beams is lit (directional lights on displaced normals) rather than a flat
+   noise/gradient fill, so it reads much dimmer than Grainient/Lightfall at
+   the shared 0.4 opacity — give it more room. */
+.page-bg.beams-page-bg {
+  opacity: 0.7;
+}
+
 a {
   color: var(--highlight-color);
   text-decoration: none;
@@ -87,7 +99,7 @@ a:hover {
 }
 
 #footer {
-  position: sticky;
+  position: static;
   bottom: 0;
   width: 100%;
   z-index: 50;
@@ -104,6 +116,23 @@ a:hover {
   font-size: 0.85rem;
   color: var(--secondary-text);
   margin: 0;
+}
+
+.site-footer .footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+.footer-admin-link {
+  font-size: 0.85rem;
+  color: var(--secondary-text);
+  font-weight: 600;
+}
+
+.footer-admin-link:hover {
+  color: var(--primary-text);
 }
 
 .card {
@@ -257,6 +286,17 @@ select {
   margin: 0 0 var(--space-2);
 }
 
+.prop-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto var(--space-3);
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  background-color: var(--secondary-bg);
+}
+
 .player {
   font-family: var(--font-display);
   font-size: 1.75rem;
@@ -343,7 +383,7 @@ select {
 /* Bottom-sheet bet slip */
 .modal-div {
   position: fixed;
-  bottom: 0;
+  bottom: var(--bottom-nav-height);
   left: 0;
   right: 0;
   z-index: 200;
@@ -491,49 +531,62 @@ select {
   border-radius: var(--radius-lg);
   padding: var(--space-6);
   margin-bottom: var(--space-6);
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
   text-align: left;
   box-shadow: var(--shadow-card);
 }
 
 .admin-form h3 {
   font-family: var(--font-display);
-  grid-column: 1 / -1;
   margin: 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
 }
 
 .admin-form label {
   font-size: 0.85rem;
   color: var(--secondary-text);
-  display: block;
-  margin-bottom: var(--space-1);
 }
 
 .admin-form input,
 .admin-form select {
   width: 100%;
+  padding: var(--space-3) var(--space-4);
 }
 
 .admin-form-actions {
-  grid-column: 1 / -1;
   display: flex;
+  justify-content: flex-end;
   gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .admin-login {
   max-width: 400px;
 }
 
-.admin-login .admin-form {
-  grid-template-columns: 1fr;
-}
-
 .form-error {
-  grid-column: 1 / -1;
   color: var(--danger-color);
   font-size: 0.9rem;
+}
+
+@media (max-width: 640px) {
+  .field-row {
+    grid-template-columns: 1fr;
+  }
 }
 
 .secondary-btn {
@@ -588,7 +641,11 @@ select {
   align-items: center;
   justify-content: center;
   min-height: calc(100vh - 76px);
-  background: radial-gradient(circle at 50% 40%, rgba(11, 7, 16, 0.35), rgba(11, 7, 16, 0.85));
+  background: radial-gradient(
+    circle at 50% 40%,
+    rgba(11, 7, 16, 0.35),
+    rgba(11, 7, 16, 0.85)
+  );
   padding: var(--space-6) var(--space-5);
 }
 
@@ -676,18 +733,21 @@ select {
 }
 
 /* Top nav */
-.site-nav {
+.site-header {
   position: sticky;
   top: 0;
   z-index: 100;
+  background-color: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.site-nav {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: var(--space-3) var(--space-5);
   padding: var(--space-4) var(--space-5);
-  background-color: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .nav-left {
@@ -703,6 +763,74 @@ select {
   margin-left: auto;
 }
 
+@media (max-width: 640px) {
+  .site-nav {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: start;
+    gap: var(--space-2) var(--space-3);
+  }
+
+  .nav-left {
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+
+  .nav-right {
+    margin-left: 0;
+  }
+}
+
+/* Glare sweep on hover — ported from reactbits.dev/animations/glare-hover,
+   using the site's off-white as the glare so it reads as a light-catch,
+   not a new accent color. */
+.nav-glare {
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-glare::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    -45deg,
+    hsla(0, 0%, 100%, 0) 60%,
+    rgba(245, 245, 247, 0.55) 70%,
+    hsla(0, 0%, 100%, 0),
+    hsla(0, 0%, 100%, 0) 100%
+  );
+  background-size:
+    300% 300%,
+    100% 100%;
+  background-repeat: no-repeat;
+  background-position:
+    -100% -100%,
+    0 0;
+  transition: background-position 650ms ease;
+}
+
+.nav-glare:hover::before {
+  background-position:
+    100% 100%,
+    0 0;
+}
+
+/* Simple lift on hover, same spring easing as .card. */
+.nav-raise {
+  display: inline-flex;
+  transition: transform 0.2s var(--ease-spring);
+}
+
+.nav-raise:hover {
+  transform: translateY(-2px);
+}
+
+.nav-raise:active {
+  transform: translateY(0);
+}
+
 .site-brand {
   font-family: var(--font-brand);
   font-weight: 400;
@@ -711,122 +839,67 @@ select {
   letter-spacing: 0;
 }
 
+.site-brand:hover {
+  text-decoration: none;
+}
+
+.site-brand-league {
+  color: var(--primary-text);
+}
+
+.site-brand-lines {
+  /* Erica One ships a single 400 weight, so font-weight: 700 doesn't
+     synthesize in Chrome — thicken the strokes directly to match League. */
+  -webkit-text-stroke: 0.6px currentColor;
+}
+
+.league-tabs-row {
+  padding: 0 var(--space-5) var(--space-4);
+}
+
 .league-tabs {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-wrap: nowrap;
   gap: var(--space-2);
-  flex: 1;
-  min-width: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.league-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .league-tab {
-  color: var(--secondary-text);
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-pill);
-  font-weight: 600;
-  font-size: 0.9rem;
+  flex-shrink: 0;
   display: inline-flex;
   align-items: center;
+  gap: var(--space-2);
+  color: var(--secondary-text);
+  background-color: var(--surface-2);
+  border: 1.5px solid transparent;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.league-tab-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
 .league-tab:hover {
-  background-color: rgba(255, 255, 255, 0.08);
   color: var(--primary-text);
+  border-color: rgba(255, 255, 255, 0.15);
   text-decoration: none;
 }
 
 .league-tab.active {
-  background-color: var(--highlight-color);
-  color: var(--primary-bg);
-}
-
-.my-bets-link {
-  background-color: var(--highlight-color);
-  color: var(--primary-bg) !important;
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-pill);
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-weight: 700;
-}
-
-.live-badge {
-  background-color: var(--danger-color);
-  color: white;
-  font-size: 0.75rem;
-  font-weight: bold;
-  padding: 0.15rem 0.45rem;
-  border-radius: var(--radius-pill);
-}
-
-.account-menu {
-  position: relative;
-}
-
-.account-summary {
-  list-style: none;
-  cursor: pointer;
+  background-color: color-mix(in srgb, var(--highlight-color) 16%, var(--surface-2));
+  border-color: var(--highlight-color);
   color: var(--primary-text);
-  font-weight: 600;
-  font-size: 0.9rem;
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-pill);
-  background-color: rgba(255, 255, 255, 0.08);
-}
-
-.account-summary::-webkit-details-marker {
-  display: none;
-}
-
-.account-summary:hover {
-  background-color: rgba(255, 255, 255, 0.14);
-}
-
-.account-menu[open] .account-summary {
-  background-color: var(--highlight-color);
-  color: var(--primary-bg);
-}
-
-.account-dropdown {
-  position: absolute;
-  top: calc(100% + var(--space-2));
-  right: 0;
-  z-index: 110;
-  background-color: var(--secondary-bg);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-sm);
-  padding: var(--space-2);
-  box-shadow: var(--shadow-card);
-  min-width: 140px;
-}
-
-.account-dropdown form {
-  margin: 0;
-}
-
-.account-dropdown .btn-outline {
-  width: 100%;
-  justify-content: center;
-}
-
-@media (max-width: 640px) {
-  .league-tabs {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    max-width: 100%;
-  }
-
-  .league-tabs::-webkit-scrollbar {
-    display: none;
-  }
-
-  .league-tab {
-    flex-shrink: 0;
-  }
 }
 
 /* Bet slip */
@@ -892,7 +965,11 @@ select {
   top: var(--space-5);
   left: 50%;
   transform: translateX(-50%) translateY(-20px);
-  background: linear-gradient(135deg, var(--accent-purple), var(--highlight-color));
+  background: linear-gradient(
+    135deg,
+    var(--accent-purple),
+    var(--highlight-color)
+  );
   color: var(--primary-bg);
   font-weight: 800;
   padding: var(--space-4) var(--space-6);
@@ -909,4 +986,407 @@ select {
 .toast.visible {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+}
+
+/* ==========================================================================
+   Player-prop card — ported from reactbits.dev's Profile Card, retinted to
+   the project palette (gold + purple instead of a full rainbow) and resized
+   to sit in a repeating grid instead of a single hero card. The pointer
+   tilt is driven by src/scripts/profileCardTilt.js, which sets the
+   pointer, rotate and background custom properties below.
+   Used only by Home.astro and admin/props.astro — src/pages/my-bets.astro
+   still uses the plain .card system and is untouched by any of this.
+   ========================================================================== */
+
+.pc-card-wrapper {
+  --pointer-from-top: 0.5;
+  --pointer-from-left: 0.5;
+  --rotate-x: 0deg;
+  --rotate-y: 0deg;
+  --card-radius: var(--radius-lg);
+  perspective: 700px;
+  transform: translate3d(0, 0, 0.1px);
+  position: relative;
+  touch-action: pan-y;
+}
+
+.pc-card-shell {
+  position: relative;
+  z-index: 1;
+}
+
+.pc-card {
+  width: 100%;
+  aspect-ratio: 0.718;
+  display: grid;
+  border-radius: var(--card-radius);
+  position: relative;
+  background-color: var(--primary-bg);
+  box-shadow: rgba(0, 0, 0, 0.8) calc((var(--pointer-from-left) * 10px) - 3px)
+    calc((var(--pointer-from-top) * 20px) - 6px) 20px -5px;
+  transition: transform 1s var(--ease-spring);
+  transform: translateZ(0) rotateX(0deg) rotateY(0deg);
+  backface-visibility: hidden;
+  overflow: hidden;
+}
+
+.pc-card-shell:hover .pc-card,
+.pc-card-shell.active .pc-card {
+  transition: none;
+  transform: translateZ(0) rotateX(var(--rotate-y)) rotateY(var(--rotate-x));
+}
+
+.pc-card * {
+  display: grid;
+  grid-area: 1/-1;
+  border-radius: var(--card-radius);
+  pointer-events: none;
+}
+
+.pc-inside {
+  inset: 0;
+  position: absolute;
+  background-image: linear-gradient(145deg, rgba(124, 92, 252, 0.28) 0%, rgba(212, 167, 44, 0.22) 100%);
+  background-color: var(--primary-bg);
+}
+
+.pc-avatar-content {
+  overflow: visible;
+  transform: translateZ(2);
+  backface-visibility: hidden;
+}
+
+.pc-avatar-content .avatar {
+  width: 100%;
+  height: 50%;
+  position: absolute;
+  top: 26%;
+  left: 0;
+  object-fit: cover;
+  object-position: center;
+  transform: translateX(calc((var(--pointer-from-left) - 0.5) * 6px)) translateZ(0);
+  backface-visibility: hidden;
+  will-change: transform;
+  transition: transform 120ms ease-out;
+}
+
+.pc-content:not(.pc-avatar-content) {
+  max-height: 100%;
+  overflow: hidden;
+  text-align: center;
+  position: relative;
+  transform: translate3d(
+    calc(var(--pointer-from-left) * -6px + 3px),
+    calc(var(--pointer-from-top) * -6px + 3px),
+    0.1px
+  );
+  z-index: 5;
+}
+
+.pc-details {
+  width: 100%;
+  position: absolute;
+  top: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 var(--space-4);
+}
+
+.pc-details h3 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--primary-text);
+  text-shadow:
+    0 2px 10px rgba(0, 0, 0, 0.7),
+    0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.pc-details p {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--highlight-color);
+  text-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.7),
+    0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.pc-details .pc-time {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.75);
+  text-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.7),
+    0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.pc-bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  flex-direction: column;
+}
+
+.pc-user-info {
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin: 0 var(--space-4) var(--space-3);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: calc(max(0px, var(--card-radius) - var(--space-4) + 6px));
+  padding: var(--space-2) var(--space-3);
+}
+
+.pc-mini-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  flex-shrink: 0;
+}
+
+.pc-mini-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.pc-handle {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pc-bet-options {
+  width: 100%;
+}
+
+/* .pc-card * (above) resets every descendant to display:grid,
+   pointer-events:none and a 24px border-radius so the shine/glare/content
+   layers can stack in one grid cell. The interactive bar and its contents
+   need to opt back out of that reset explicitly. */
+.pc-bottom,
+.pc-bottom * {
+  pointer-events: auto;
+}
+
+.pc-bottom,
+.pc-user-info,
+.pc-mini-avatar,
+.pc-bet-options {
+  display: flex;
+}
+
+.pc-user-info .status-pill {
+  display: inline-flex;
+  border-radius: var(--radius-pill);
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.pc-bet-options .over-btn,
+.pc-bet-options .under-btn {
+  flex: 1;
+  border-radius: 0;
+  padding: var(--space-3);
+  font-size: 0.85rem;
+  background-color: transparent;
+  color: var(--primary-text);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.pc-bet-options .over-btn {
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom-left-radius: var(--card-radius);
+}
+
+.pc-bet-options .under-btn {
+  border-bottom-right-radius: var(--card-radius);
+}
+
+.pc-bet-options .over-btn.selected,
+.pc-bet-options .under-btn.selected {
+  background-color: var(--highlight-color);
+  color: var(--primary-bg);
+}
+
+.pc-admin-panel {
+  background-color: var(--secondary-bg);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin-top: var(--space-3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pc-card {
+    transition: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .pc-user-info {
+    --ui-inset: var(--space-3);
+    padding: var(--space-2);
+  }
+
+  .pc-mini-avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .pc-details {
+    top: var(--space-4);
+  }
+
+  .pc-details h3 {
+    font-size: 1.3rem;
+  }
+}
+
+.leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  text-align: left;
+}
+
+.leaderboard-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  background-color: var(--secondary-bg);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  box-shadow: var(--shadow-card);
+}
+
+.leaderboard-rank {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--highlight-color);
+  width: 2ch;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.leaderboard-name {
+  flex: 1;
+  font-weight: 600;
+}
+
+.account-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+}
+
+.leaderboard-row .prop-avatar,
+.account-card .prop-avatar {
+  margin: 0;
+}
+
+body.has-bottom-nav {
+  padding-bottom: var(--bottom-nav-height);
+}
+
+body.has-bottom-nav:has(.open-modal.visible) {
+  padding-bottom: calc(var(--bottom-nav-height) + var(--bet-slip-bar-height));
+}
+
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 150;
+  height: var(--bottom-nav-height);
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  padding-bottom: calc(var(--space-2) + env(safe-area-inset-bottom, 0px));
+  background-color: var(--secondary-bg);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.bottom-nav-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  flex: 1;
+  max-width: 96px;
+  color: var(--secondary-text);
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.bottom-nav-tab:hover {
+  color: var(--primary-text);
+  text-decoration: none;
+}
+
+.bottom-nav-icon {
+  position: relative;
+  width: 24px;
+  height: 24px;
+}
+
+.bottom-nav-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.bottom-nav-badge {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 3px;
+  border-radius: var(--radius-pill);
+  background-color: var(--danger-color);
+  color: white;
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.6rem;
+  font-weight: 700;
+  line-height: 15px;
+  text-align: center;
+}
+
+.bottom-nav-tab.active {
+  color: var(--primary-text);
+}
+
+.bottom-nav-tab.active .bottom-nav-icon {
+  color: var(--highlight-color);
 }
