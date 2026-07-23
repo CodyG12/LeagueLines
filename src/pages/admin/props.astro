@@ -26,41 +26,62 @@ const users = await listAllUsers();
     <form id="prop-form" class="admin-form">
       <h3 id="prop-form-title">New Prop</h3>
       <input type="hidden" id="prop-id" value="" />
-      <label for="sport">Sport</label>
-      <select id="sport" name="sport" required>
-        <option value="" disabled selected>Select sport...</option>
-        {sportOptions.map((option) => <option value={option}>{option}</option>)}
-        <option value="__add_new__">+ Add New...</option>
-      </select>
-      <label for="player">Player</label>
-      <select id="player" name="player" required>
-        <option value="" disabled selected>Select player...</option>
-        <optgroup label="Registered Users">
-          {users.map((user) => (
-            <option value={`user:${user.id}`}>{user.firstName} {user.lastName} (@{user.username})</option>
-          ))}
-        </optgroup>
-        <optgroup label="Other Players">
-          {playerOptions.map((option) => <option value={option}>{option}</option>)}
-        </optgroup>
-        <option value="__add_new__">+ Add New...</option>
-      </select>
-      <label for="team">Team (optional)</label>
-      <input type="text" id="team" name="team" />
-      <label for="stat">Stat</label>
-      <select id="stat" name="stat" required>
-        <option value="" disabled selected>Select stat...</option>
-        {statOptions.map((option) => <option value={option}>{option}</option>)}
-        <option value="__add_new__">+ Add New...</option>
-      </select>
-      <label for="line">Line</label>
-      <input type="number" step="0.5" id="line" name="line" required />
-      <label for="startTime">Start Time</label>
-      <input type="datetime-local" id="startTime" name="startTime" required />
+
+      <div class="field">
+        <label for="sport">Sport</label>
+        <select id="sport" name="sport" required>
+          <option value="" disabled selected>Select sport...</option>
+          {sportOptions.map((option) => <option value={option}>{option}</option>)}
+          <option value="__add_new__">+ Add New...</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="player">Player</label>
+        <select id="player" name="player" required>
+          <option value="" disabled selected>Select player...</option>
+          <optgroup label="Registered Users">
+            {users.map((user) => (
+              <option value={`user:${user.id}`}>{user.firstName} {user.lastName} (@{user.username})</option>
+            ))}
+          </optgroup>
+          <optgroup label="Other Players">
+            {playerOptions.map((option) => <option value={option}>{option}</option>)}
+          </optgroup>
+          <option value="__add_new__">+ Add New...</option>
+        </select>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="team">Team (optional)</label>
+          <input type="text" id="team" name="team" />
+        </div>
+        <div class="field">
+          <label for="stat">Stat</label>
+          <select id="stat" name="stat" required>
+            <option value="" disabled selected>Select stat...</option>
+            {statOptions.map((option) => <option value={option}>{option}</option>)}
+            <option value="__add_new__">+ Add New...</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="line">Line</label>
+          <input type="number" step="0.5" id="line" name="line" required />
+        </div>
+        <div class="field">
+          <label for="startTime">Start Time</label>
+          <input type="datetime-local" id="startTime" name="startTime" required />
+        </div>
+      </div>
+
       <div id="form-error" class="form-error"></div>
       <div class="admin-form-actions">
-        <button type="submit" id="prop-form-submit">Create Prop</button>
         <button type="button" id="prop-form-cancel" class="secondary-btn" hidden>Cancel Edit</button>
+        <button type="submit" id="prop-form-submit">Create Prop</button>
       </div>
     </form>
 
