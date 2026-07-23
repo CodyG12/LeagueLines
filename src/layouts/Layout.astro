@@ -1,5 +1,8 @@
 ---
 import { ViewTransitions } from "astro:transitions";
+import BottomNav from "../components/sub_components/BottomNav.astro";
+
+const isAdminRoute = Astro.url.pathname.startsWith("/admin");
 ---
 
 <!doctype html>
@@ -23,8 +26,9 @@ import { ViewTransitions } from "astro:transitions";
     <title>LeagueLines</title>
     <ViewTransitions />
   </head>
-  <body data-logged-in={Astro.locals.user ? "true" : "false"}>
+  <body data-logged-in={Astro.locals.user ? "true" : "false"} class={isAdminRoute ? "" : "has-bottom-nav"}>
     <slot />
+    {!isAdminRoute && <BottomNav />}
   </body>
 </html>
 

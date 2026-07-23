@@ -1,0 +1,58 @@
+---
+interface Tab {
+  href: string;
+  label: string;
+  icon: "props" | "bets" | "leaderboard" | "account";
+}
+
+const tabs: Tab[] = [
+  { href: "/", label: "Props", icon: "props" },
+  { href: "/my-bets", label: "My Bets", icon: "bets" },
+  { href: "/leaderboard", label: "Leaderboard", icon: "leaderboard" },
+  { href: "/account", label: "Account", icon: "account" },
+];
+
+const currentPath = Astro.url.pathname;
+
+function isActive(href: string): boolean {
+  if (href === "/") return currentPath === "/";
+  return currentPath === href || currentPath.startsWith(`${href}/`);
+}
+---
+
+<nav class="bottom-nav" aria-label="Primary">
+  {tabs.map((tab) => (
+    <a href={tab.href} class={isActive(tab.href) ? "bottom-nav-tab active" : "bottom-nav-tab"}>
+      <span class="bottom-nav-icon" aria-hidden="true">
+        {tab.icon === "props" && (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 11l9-8 9 8" />
+            <path d="M5 10v10h14V10" />
+          </svg>
+        )}
+        {tab.icon === "bets" && (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M8 12.5l2.5 2.5L16 9.5" />
+          </svg>
+        )}
+        {tab.icon === "leaderboard" && (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 4h10v6a5 5 0 0 1-10 0V4z" />
+            <path d="M7 6H4a3 3 0 0 0 3 3" />
+            <path d="M17 6h3a3 3 0 0 1-3 3" />
+            <path d="M12 17v4" />
+            <path d="M8 21h8" />
+          </svg>
+        )}
+        {tab.icon === "account" && (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 20c0-4 3.5-6 8-6s8 2 8 6" />
+          </svg>
+        )}
+      </span>
+      <span class="bottom-nav-label">{tab.label}</span>
+    </a>
+  ))}
+</nav>
