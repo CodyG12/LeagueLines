@@ -1334,7 +1334,7 @@ select {
   font-family: var(--font-num);
   font-variant-numeric: tabular-nums;
   font-weight: 800;
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: var(--highlight-color);
   width: 2ch;
   flex-shrink: 0;
@@ -1352,6 +1352,11 @@ select {
   align-items: center;
   gap: var(--space-3);
   text-align: center;
+}
+
+.leaderboard-row .prop-avatar,
+.account-card .prop-avatar {
+  margin: 0;
 }
 
 body.has-bottom-nav {
