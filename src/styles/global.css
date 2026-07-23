@@ -838,8 +838,7 @@ select {
   letter-spacing: 0;
 }
 
-.site-brand:hover,
-.my-bets-link:hover {
+.site-brand:hover {
   text-decoration: none;
 }
 
@@ -900,26 +899,6 @@ select {
   background-color: color-mix(in srgb, var(--highlight-color) 16%, var(--surface-2));
   border-color: var(--highlight-color);
   color: var(--primary-text);
-}
-
-.my-bets-link {
-  background-color: var(--highlight-color);
-  color: var(--primary-bg) !important;
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-pill);
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-weight: 700;
-}
-
-.live-badge {
-  background-color: var(--danger-color);
-  color: white;
-  font-size: 0.75rem;
-  font-weight: bold;
-  padding: 0.15rem 0.45rem;
-  border-radius: var(--radius-pill);
 }
 
 /* Bet slip */
