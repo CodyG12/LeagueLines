@@ -1,7 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/sub_components/Header.astro";
-import Lightfall from "../components/react/Lightfall";
+import Beams from "../components/react/Beams";
 import { listBetsForUser } from "../lib/bets";
 
 if (!Astro.locals.user) {
@@ -15,11 +15,19 @@ const pastBets = bets.filter((bet) => bet.status !== "pending");
 
 <Layout>
   <script src="../scripts/myBets.js"></script>
-  <div class="page-bg">
-    <Lightfall
+  <div class="page-bg beams-page-bg">
+    <Beams
       client:load
-      colors={["#d4a72c", "#7c5cfc"]}
-      backgroundColor="#151417"
+      beamWidth={2}
+      beamHeight={15}
+      beamNumber={12}
+      lightColor="#7c5cfc"
+      secondaryLightColor="#d4a72c"
+      speed={2}
+      noiseIntensity={1.75}
+      scale={0.2}
+      rotation={0}
+      backgroundColor="#050506"
     />
   </div>
   <Header />
