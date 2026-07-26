@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Nav from "../components/sub_components/Nav.astro";
+import Lightfall from "../components/react/Lightfall";
 import { listAllUsers } from "../lib/users";
 
 const users = await listAllUsers();
@@ -8,6 +9,9 @@ const ranked = [...users].sort((a, b) => b.units - a.units);
 ---
 
 <Layout>
+  <div class="page-bg">
+    <Lightfall client:load colors={["#d4a72c", "#7c5cfc"]} backgroundColor="#151417" />
+  </div>
   <Nav showCategories={false} />
   <main class="container">
     <h2 class="title">Leaderboard</h2>
