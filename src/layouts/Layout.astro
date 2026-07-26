@@ -11,7 +11,11 @@ const isAdminRoute = Astro.url.pathname.startsWith("/admin");
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/leaguelines-icon.svg" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href={isAdminRoute ? "/leaguelines-icon-admin.svg" : "/leaguelines-icon.svg"}
+    />
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
     <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
