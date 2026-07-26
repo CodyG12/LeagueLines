@@ -1021,6 +1021,8 @@ select {
   display: grid;
   border-radius: var(--card-radius);
   position: relative;
+  container-type: size;
+  container-name: pc-card;
   background-color: var(--primary-bg);
   box-shadow: rgba(0, 0, 0, 0.8) calc((var(--pointer-from-left) * 10px) - 3px)
     calc((var(--pointer-from-top) * 20px) - 6px) 20px -5px;
@@ -1110,7 +1112,7 @@ select {
   font-variant-numeric: tabular-nums;
   font-weight: 800;
   margin: 0;
-  font-size: 1.05rem;
+  font-size: 1.6rem;
   color: var(--highlight-color);
   text-shadow:
     0 2px 8px rgba(0, 0, 0, 0.7),
@@ -1148,20 +1150,21 @@ select {
   padding: var(--space-2) var(--space-3);
 }
 
-.pc-mini-avatar {
+.pc-sport-icon {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  overflow: hidden;
+  align-items: center;
+  justify-content: center;
   border: 1px solid rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--highlight-color);
   flex-shrink: 0;
 }
 
-.pc-mini-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
+.pc-sport-icon svg {
+  width: 20px;
+  height: 20px;
 }
 
 .pc-handle {
@@ -1180,6 +1183,7 @@ select {
 
 .pc-bet-options {
   width: 100%;
+  height: 13cqh;
 }
 
 /* .pc-card * (above) resets every descendant to display:grid,
@@ -1193,7 +1197,7 @@ select {
 
 .pc-bottom,
 .pc-user-info,
-.pc-mini-avatar,
+.pc-sport-icon,
 .pc-bet-options {
   display: flex;
 }
@@ -1208,9 +1212,13 @@ select {
 .pc-bet-options .over-btn,
 .pc-bet-options .under-btn {
   flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 0;
-  padding: var(--space-3);
-  font-size: 0.85rem;
+  padding: 0 var(--space-3);
+  font-size: 1.1rem;
   background-color: transparent;
   color: var(--primary-text);
   border-top: 1px solid rgba(255, 255, 255, 0.12);
@@ -1251,9 +1259,14 @@ select {
     padding: var(--space-2);
   }
 
-  .pc-mini-avatar {
+  .pc-sport-icon {
     width: 32px;
     height: 32px;
+  }
+
+  .pc-sport-icon svg {
+    width: 16px;
+    height: 16px;
   }
 
   .pc-details {
