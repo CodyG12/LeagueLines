@@ -129,7 +129,7 @@ const users = await listAllUsers();
       </div>
     </form>
 
-    <div class="grid">
+    <div class="prop-grid">
       {
         props.map((prop) => (
           <div class="admin-prop" data-prop={JSON.stringify(prop)}>
@@ -158,7 +158,7 @@ const users = await listAllUsers();
                               set:html={sportIcon(prop.sport)}
                             />
                           </div>
-                          <div class="pc-handle">{prop.team ? `${prop.team} · ${prop.sport}` : prop.sport}</div>
+                          <div class="pc-handle">{prop.sport}</div>
                           <span
                             class={`status-pill status-pill--${prop.status}`}
                           >
@@ -173,6 +173,7 @@ const users = await listAllUsers();
                         <p>
                           {prop.line} {prop.stat}
                         </p>
+                        {prop.team && <span class="pc-team">{prop.team}</span>}
                         <span class="pc-time">{prop.displayTime}</span>
                       </div>
                     </div>
