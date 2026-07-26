@@ -1,50 +1,24 @@
-// To open modal
-const openBtn = document.getElementById("openModal");
-const closeBtn = document.getElementById("closeModal");
-const modal = document.getElementById("modal");
+function init() {
+  const openBtn = document.getElementById("openModal");
+  const closeBtn = document.getElementById("closeModal");
+  const modal = document.getElementById("modal");
 
-openBtn.addEventListener("click", () => {
-  modal.classList.add("open");
-});
+  if (!openBtn || !closeBtn || !modal) return;
 
-closeBtn.addEventListener("click", () => {
-  modal.classList.remove("open");
-});
+  openBtn.addEventListener("click", () => {
+    modal.classList.add("open");
+  });
 
-// To hide and show modal
-const divContainer = document.querySelector("#openModal");
+  closeBtn.addEventListener("click", () => {
+    modal.classList.remove("open");
+  });
 
-if (divContainer) {
   window.showOrHide = function () {
-    divContainer.classList.add("visible");
+    openBtn.classList.add("visible");
   };
-} else {
-  console.error("Element with ID 'openModal' not found.");
 }
 
-// document.addEventListener("DOMContentLoaded", () => {
-//   const openBtn = document.getElementById("openModal");
-//   const closeBtn = document.getElementById("closeModal");
-//   const modal = document.getElementById("modal");
-
-//   if (openBtn && closeBtn && modal) {
-//     openBtn.addEventListener("click", () => {
-//       modal.classList.add("open");
-//     });
-
-//     closeBtn.addEventListener("click", () => {
-//       modal.classList.remove("open");
-//     });
-//   } else {
-//     console.error("Modal elements not found.");
-//   }
-
-//   const divContainer = document.querySelector("#openModal");
-//   if (divContainer) {
-//     window.showOrHide = function () {
-//       divContainer.classList.add("visible");
-//     };
-//   } else {
-//     console.error("Element with ID 'openModal' not found.");
-//   }
-// });
+// Re-run on every navigation, not just the first: Astro's View Transitions
+// swap page content without a full reload, so scripts only re-attach
+// listeners to the fresh DOM when hooked to this event.
+document.addEventListener("astro:page-load", init);
