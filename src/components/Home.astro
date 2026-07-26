@@ -41,7 +41,7 @@ const heading = sport ? `${sport} Props` : "Player Props";
 <main class="container">
   <h2 class="title">{heading}</h2>
 
-  <div class="grid">
+  <div class="prop-grid">
     {playerProps.map((prop) => (
       <div /*key={prop.id}*/ class="pc-card-wrapper player-prop">
         <div class="pc-card-shell">
@@ -63,7 +63,7 @@ const heading = sport ? `${sport} Props` : "Player Props";
                         set:html={sportIcon(prop.sport)}
                       />
                     </div>
-                    <div class="pc-handle">{prop.team ? `${prop.team} · ${prop.sport}` : prop.sport}</div>
+                    <div class="pc-handle">{prop.sport}</div>
                   </div>
                   <div class="pc-bet-options">
                     <button data-prop={JSON.stringify(prop)} class="over-btn">Over</button>
@@ -75,6 +75,7 @@ const heading = sport ? `${sport} Props` : "Player Props";
                 <div class="pc-details">
                   <h3>{prop.player}</h3>
                   <p>{prop.line} {prop.stat}</p>
+                  {prop.team && <span class="pc-team">{prop.team}</span>}
                   <span class="pc-time">{prop.displayTime}</span>
                 </div>
               </div>
