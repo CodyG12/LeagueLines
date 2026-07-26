@@ -14,6 +14,7 @@ const error = Astro.url.searchParams.get("error");
     {error === "short-password" && <p class="form-error">Password must be at least 8 characters.</p>}
     {error === "invalid-avatar-type" && <p class="form-error">Profile picture must be a PNG, JPEG, WEBP, or GIF image.</p>}
     {error === "avatar-too-large" && <p class="form-error">Profile picture must be smaller than 5MB.</p>}
+    {error === "avatar-upload-failed" && <p class="form-error">We couldn't upload your profile picture right now. Please try again, or pick one of the mascot avatars instead.</p>}
     <form method="POST" action="/api/auth/signup" class="admin-form" enctype="multipart/form-data" data-astro-reload>
       <label for="firstName">First Name</label>
       <input type="text" id="firstName" name="firstName" required autofocus />

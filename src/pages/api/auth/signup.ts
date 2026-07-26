@@ -46,7 +46,8 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
       if (err instanceof InvalidAvatarError) {
         return redirect(`/signup?error=${err.code === "invalid-type" ? "invalid-avatar-type" : "avatar-too-large"}`);
       }
-      throw err;
+      console.error("Avatar upload failed during signup:", err);
+      return redirect("/signup?error=avatar-upload-failed");
     }
   } else if (typeof avatarSprite === "string" && (SPRITE_AVATARS as readonly string[]).includes(avatarSprite)) {
     avatarUrl = avatarSprite;
