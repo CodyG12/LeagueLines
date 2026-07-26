@@ -3,6 +3,7 @@ import Layout from "../../layouts/Layout.astro";
 import { listAllProps } from "../../lib/props";
 import { listOptionSets } from "../../lib/propOptions";
 import { listAllUsers } from "../../lib/users";
+import { sportIcon } from "../../lib/sportIcons";
 
 const props = await listAllProps();
 const {
@@ -145,14 +146,19 @@ const users = await listAllUsers();
                       />
                       <div class="pc-bottom">
                         <div class="pc-user-info">
-                          <div class="pc-mini-avatar">
-                            <img
-                              src={prop.playerAvatarUrl}
-                              alt=""
-                              loading="lazy"
+                          <div class="pc-sport-icon" title={prop.sport}>
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="1.6"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              aria-hidden="true"
+                              set:html={sportIcon(prop.sport)}
                             />
                           </div>
-                          <div class="pc-handle">{prop.sport}</div>
+                          <div class="pc-handle">{prop.team ? `${prop.team} · ${prop.sport}` : prop.sport}</div>
                           <span
                             class={`status-pill status-pill--${prop.status}`}
                           >
