@@ -47,13 +47,11 @@ const heading = sport ? `${sport} Props` : "Player Props";
           <section class="pc-card">
             <div class="pc-inside">
               <div class="pc-content pc-avatar-content">
-                {prop.playerAvatarUrl && (
-                  <img class="avatar" src={prop.playerAvatarUrl} alt="" loading="lazy" />
-                )}
+                <img class="avatar" src={prop.playerAvatarUrl} alt="" loading="lazy" />
                 <div class="pc-bottom">
                   <div class="pc-user-info">
                     <div class="pc-mini-avatar">
-                      <img src={prop.playerAvatarUrl ?? "/avatar-placeholder.svg"} alt="" loading="lazy" />
+                      <img src={prop.playerAvatarUrl} alt="" loading="lazy" />
                     </div>
                     <div class="pc-handle">{prop.sport}</div>
                   </div>

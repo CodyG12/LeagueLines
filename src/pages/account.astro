@@ -1,12 +1,14 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Nav from "../components/sub_components/Nav.astro";
+import { SPRITE_AVATARS, isSpriteAvatar } from "../lib/sprites";
 
 if (!Astro.locals.user) {
   return Astro.redirect("/login");
 }
 
 const user = Astro.locals.user;
+const showSpritePicker = !user.avatarUrl || isSpriteAvatar(user.avatarUrl);
 ---
 
 <Layout>
@@ -22,5 +24,26 @@ const user = Astro.locals.user;
         <button type="submit" class="btn-outline">Log Out</button>
       </form>
     </div>
+
+    {
+      showSpritePicker && (
+        <div class="card sprite-picker-card">
+          <p class="sprite-picker-label">Choose an avatar</p>
+          <form method="POST" action="/api/account/avatar" class="sprite-picker-grid" data-astro-reload>
+            {SPRITE_AVATARS.map((sprite) => (
+              <button
+                type="submit"
+                name="avatarSprite"
+                value={sprite}
+                class={sprite === user.avatarUrl ? "sprite-option selected" : "sprite-option"}
+                aria-label="Use this avatar"
+              >
+                <img src={sprite} alt="" loading="lazy" />
+              </button>
+            ))}
+          </form>
+        </div>
+      )
+    }
   </main>
 </Layout>

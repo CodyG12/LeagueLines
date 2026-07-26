@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import { SPRITE_AVATARS } from "../lib/sprites";
 
 const error = Astro.url.searchParams.get("error");
 ---
@@ -33,6 +34,23 @@ const error = Astro.url.searchParams.get("error");
       <input type="password" id="password" name="password" minlength="8" required />
       <label for="avatar">Profile Picture (optional)</label>
       <input type="file" id="avatar" name="avatar" accept="image/png,image/jpeg,image/webp,image/gif" />
+      <label>Or pick an avatar (optional)</label>
+      <div class="sprite-picker-grid">
+        {SPRITE_AVATARS.map((sprite, index) => (
+          <span class="sprite-option-wrap">
+            <input
+              type="radio"
+              id={`sprite-${index}`}
+              name="avatarSprite"
+              value={sprite}
+              class="sprite-radio"
+            />
+            <label for={`sprite-${index}`} class="sprite-option">
+              <img src={sprite} alt="" loading="lazy" />
+            </label>
+          </span>
+        ))}
+      </div>
       <button type="submit">Sign Up</button>
     </form>
     <p><a href="/login">Already have an account? Log in</a></p>

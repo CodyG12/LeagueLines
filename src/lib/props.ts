@@ -1,6 +1,7 @@
 import { ObjectId, type Collection } from "mongodb";
 import clientPromise from "./mongodb";
 import { getCollection as getUsersCollection } from "./users";
+import { pickSpriteFor } from "./sprites";
 
 export type PropStatus = "scheduled" | "live" | "closed";
 export type PropResult = "over" | "under" | "push" | null;
@@ -105,20 +106,26 @@ async function attachPlayerAvatars(props: PublicPlayerProp[]): Promise<PublicPla
   const ids = Array.from(
     new Set(props.map((p) => p.playerUserId).filter((id): id is string => id !== null)),
   );
-  if (ids.length === 0) return props;
 
-  const usersCollection = await getUsersCollection();
-  const users = await usersCollection
-    .find(
-      { _id: { $in: ids.map((id) => new ObjectId(id)) } },
-      { projection: { avatarUrl: 1 } },
-    )
-    .toArray();
-  const avatarById = new Map(users.map((u) => [u._id.toString(), u.avatarUrl ?? null]));
+  let avatarById = new Map<string, string | null>();
+  if (ids.length > 0) {
+    const usersCollection = await getUsersCollection();
+    const users = await usersCollection
+      .find(
+        { _id: { $in: ids.map((id) => new ObjectId(id)) } },
+        { projection: { avatarUrl: 1 } },
+      )
+      .toArray();
+    avatarById = new Map(users.map((u) => [u._id.toString(), u.avatarUrl ?? null]));
+  }
 
-  return props.map((p) =>
-    p.playerUserId ? { ...p, playerAvatarUrl: avatarById.get(p.playerUserId) ?? null } : p,
-  );
+  // Every prop gets a real image: a registered user's own photo, or a
+  // sprite deterministically picked from its id so it stays the same
+  // across renders instead of changing on every reload.
+  return props.map((p) => {
+    const resolved = p.playerUserId ? (avatarById.get(p.playerUserId) ?? null) : null;
+    return { ...p, playerAvatarUrl: resolved ?? pickSpriteFor(p.id) };
+  });
 }
 
 export async function listPublicProps(): Promise<PublicPlayerProp[]> {
