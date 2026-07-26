@@ -1062,8 +1062,8 @@ select {
   position: absolute;
   top: 26%;
   left: 0;
-  object-fit: cover;
-  object-position: center 20%;
+  object-fit: contain;
+  object-position: center;
   transform: translateX(calc((var(--pointer-from-left) - 0.5) * 6px)) translateZ(0);
   backface-visibility: hidden;
   will-change: transform;
