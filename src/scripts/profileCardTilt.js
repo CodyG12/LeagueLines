@@ -126,4 +126,11 @@ function initCard(wrap) {
   });
 }
 
-document.querySelectorAll(".pc-card-wrapper").forEach(initCard);
+function init() {
+  document.querySelectorAll(".pc-card-wrapper").forEach(initCard);
+}
+
+// Re-run on every navigation, not just the first: Astro's View Transitions
+// swap page content without a full reload, so scripts only re-attach
+// listeners to the fresh DOM when hooked to this event.
+document.addEventListener("astro:page-load", init);
