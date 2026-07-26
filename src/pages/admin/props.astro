@@ -5,7 +5,11 @@ import { listOptionSets } from "../../lib/propOptions";
 import { listAllUsers } from "../../lib/users";
 
 const props = await listAllProps();
-const { sport: sportOptions, player: playerOptions, stat: statOptions } = await listOptionSets();
+const {
+  sport: sportOptions,
+  player: playerOptions,
+  stat: statOptions,
+} = await listOptionSets();
 const users = await listAllUsers();
 ---
 
@@ -16,7 +20,9 @@ const users = await listAllUsers();
     <div class="admin-header">
       <h2 class="title">Manage Player Props</h2>
       <div class="admin-header-actions">
-        <button type="button" id="seed-props-btn" class="secondary-btn">Seed Random Props (Test)</button>
+        <button type="button" id="seed-props-btn" class="secondary-btn"
+          >Seed Random Props (Test)</button
+        >
         <form method="POST" action="/api/admin/logout" data-astro-reload>
           <button type="submit">Log Out</button>
         </form>
@@ -28,15 +34,41 @@ const users = await listAllUsers();
       <input type="hidden" id="prop-id" value="" />
 
       <div class="field">
+        <label for="player">Player</label>
+        <select id="player" name="player" required>
+          <option value="" disabled selected>Select player...</option>
+          <optgroup label="Registered Users">
+            {
+              users.map((user) => (
+                <option value={`user:${user.id}`}>
+                  {user.firstName} {user.lastName} (@{user.username})
+                </option>
+              ))
+            }
+          </optgroup>
+          <optgroup label="Other Players">
+            {
+              playerOptions.map((option) => (
+                <option value={option}>{option}</option>
+              ))
+            }
+          </optgroup>
+          <option value="__add_new__">+ Add New...</option>
+        </select>
+      </div><div class="field">
         <label for="sport">Sport</label>
         <select id="sport" name="sport" required>
           <option value="" disabled selected>Select sport...</option>
-          {sportOptions.map((option) => <option value={option}>{option}</option>)}
+          {
+            sportOptions.map((option) => (
+              <option value={option}>{option}</option>
+            ))
+          }
           <option value="__add_new__">+ Add New...</option>
         </select>
       </div>
 
-      <div class="field">
+      <!-- <div class="field">
         <label for="player">Player</label>
         <select id="player" name="player" required>
           <option value="" disabled selected>Select player...</option>
@@ -50,7 +82,7 @@ const users = await listAllUsers();
           </optgroup>
           <option value="__add_new__">+ Add New...</option>
         </select>
-      </div>
+      </div> -->
 
       <div class="field-row">
         <div class="field">
@@ -61,7 +93,11 @@ const users = await listAllUsers();
           <label for="stat">Stat</label>
           <select id="stat" name="stat" required>
             <option value="" disabled selected>Select stat...</option>
-            {statOptions.map((option) => <option value={option}>{option}</option>)}
+            {
+              statOptions.map((option) => (
+                <option value={option}>{option}</option>
+              ))
+            }
             <option value="__add_new__">+ Add New...</option>
           </select>
         </div>
@@ -74,68 +110,103 @@ const users = await listAllUsers();
         </div>
         <div class="field">
           <label for="startTime">Start Time</label>
-          <input type="datetime-local" id="startTime" name="startTime" required />
+          <input
+            type="datetime-local"
+            id="startTime"
+            name="startTime"
+            required
+          />
         </div>
       </div>
 
       <div id="form-error" class="form-error"></div>
       <div class="admin-form-actions">
-        <button type="button" id="prop-form-cancel" class="secondary-btn" hidden>Cancel Edit</button>
+        <button type="button" id="prop-form-cancel" class="secondary-btn" hidden
+          >Cancel Edit</button
+        >
         <button type="submit" id="prop-form-submit">Create Prop</button>
       </div>
     </form>
 
     <div class="grid">
-      {props.map((prop) => (
-        <div class="admin-prop" data-prop={JSON.stringify(prop)}>
-          <div class="pc-card-wrapper">
-            <div class="pc-card-shell">
-              <section class="pc-card">
-                <div class="pc-inside">
-                  <div class="pc-content pc-avatar-content">
-                    {prop.playerAvatarUrl && (
-                      <img class="avatar" src={prop.playerAvatarUrl} alt="" loading="lazy" />
-                    )}
-                    <div class="pc-bottom">
-                      <div class="pc-user-info">
-                        <div class="pc-mini-avatar">
-                          <img src={prop.playerAvatarUrl ?? "/avatar-placeholder.svg"} alt="" loading="lazy" />
+      {
+        props.map((prop) => (
+          <div class="admin-prop" data-prop={JSON.stringify(prop)}>
+            <div class="pc-card-wrapper">
+              <div class="pc-card-shell">
+                <section class="pc-card">
+                  <div class="pc-inside">
+                    <div class="pc-content pc-avatar-content">
+                      {prop.playerAvatarUrl && (
+                        <img
+                          class="avatar"
+                          src={prop.playerAvatarUrl}
+                          alt=""
+                          loading="lazy"
+                        />
+                      )}
+                      <div class="pc-bottom">
+                        <div class="pc-user-info">
+                          <div class="pc-mini-avatar">
+                            <img
+                              src={
+                                prop.playerAvatarUrl ??
+                                "/avatar-placeholder.svg"
+                              }
+                              alt=""
+                              loading="lazy"
+                            />
+                          </div>
+                          <div class="pc-handle">{prop.sport}</div>
+                          <span
+                            class={`status-pill status-pill--${prop.status}`}
+                          >
+                            {prop.status}
+                          </span>
                         </div>
-                        <div class="pc-handle">{prop.sport}</div>
-                        <span class={`status-pill status-pill--${prop.status}`}>{prop.status}</span>
+                      </div>
+                    </div>
+                    <div class="pc-content">
+                      <div class="pc-details">
+                        <h3>{prop.player}</h3>
+                        <p>
+                          {prop.line} {prop.stat}
+                        </p>
+                        <span class="pc-time">{prop.displayTime}</span>
                       </div>
                     </div>
                   </div>
-                  <div class="pc-content">
-                    <div class="pc-details">
-                      <h3>{prop.player}</h3>
-                      <p>{prop.line} {prop.stat}</p>
-                      <span class="pc-time">{prop.displayTime}</span>
-                    </div>
-                  </div>
-                </div>
-              </section>
-            </div>
-          </div>
-
-          <div class="pc-admin-panel">
-            <div class="admin-prop-actions">
-              <button type="button" class="edit-btn secondary-btn">Edit</button>
-              <button type="button" class="delete-btn">Delete</button>
+                </section>
+              </div>
             </div>
 
-            <form class="close-form">
-              <select name="result" required>
-                <option value="" disabled selected>Grade result...</option>
-                <option value="over">Over</option>
-                <option value="under">Under</option>
-                <option value="push">Push</option>
-              </select>
-              <button type="submit" class="secondary-btn">Close & Grade</button>
-            </form>
+            <div class="pc-admin-panel">
+              <div class="admin-prop-actions">
+                <button type="button" class="edit-btn secondary-btn">
+                  Edit
+                </button>
+                <button type="button" class="delete-btn">
+                  Delete
+                </button>
+              </div>
+
+              <form class="close-form">
+                <select name="result" required>
+                  <option value="" disabled selected>
+                    Grade result...
+                  </option>
+                  <option value="over">Over</option>
+                  <option value="under">Under</option>
+                  <option value="push">Push</option>
+                </select>
+                <button type="submit" class="secondary-btn">
+                  Close & Grade
+                </button>
+              </form>
+            </div>
           </div>
-        </div>
-      ))}
+        ))
+      }
     </div>
   </main>
 </Layout>
