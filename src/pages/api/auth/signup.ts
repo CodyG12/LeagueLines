@@ -2,6 +2,7 @@ import type { APIRoute } from "astro";
 import { createUser, usernameExists } from "../../../lib/users";
 import { USER_COOKIE_NAME, createUserSessionToken } from "../../../lib/userAuth";
 import { uploadAvatar, InvalidAvatarError } from "../../../lib/avatarStorage";
+import { SPRITE_AVATARS } from "../../../lib/sprites";
 
 const USERNAME_PATTERN = /^[a-zA-Z0-9_]{3,20}$/;
 
@@ -12,6 +13,7 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
   const username = form.get("username");
   const password = form.get("password");
   const avatar = form.get("avatar");
+  const avatarSprite = form.get("avatarSprite");
 
   if (
     typeof firstName !== "string" ||
@@ -46,6 +48,8 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
       }
       throw err;
     }
+  } else if (typeof avatarSprite === "string" && (SPRITE_AVATARS as readonly string[]).includes(avatarSprite)) {
+    avatarUrl = avatarSprite;
   }
 
   const user = await createUser(firstName.trim(), lastName.trim(), username, password, avatarUrl);

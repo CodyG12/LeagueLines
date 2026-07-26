@@ -1,0 +1,21 @@
+<svg viewBox="0 0 300 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="LeagueLines mascot sprite">
+<g transform="translate(6,6)" opacity="0.28" fill="#100D0A">
+<rect x="88.0" y="252" width="46" height="34" rx="17"/>
+<rect x="166.0" y="252" width="46" height="34" rx="17"/>
+<rect x="45" y="150" width="34" height="60" rx="17"/>
+<rect x="221" y="150" width="34" height="60" rx="17"/>
+<rect x="65" y="40" width="170" height="230" rx="78"/>
+</g>
+<rect x="88.0" y="252" width="46" height="34" rx="17" fill="rgb(184,133,40)"/>
+<rect x="166.0" y="252" width="46" height="34" rx="17" fill="rgb(184,133,40)"/>
+<rect x="45" y="150" width="34" height="60" rx="17" fill="rgb(219,165,60)"/>
+<rect x="221" y="150" width="34" height="60" rx="17" fill="rgb(219,165,60)"/>
+<rect x="65" y="40" width="170" height="230" rx="78" fill="rgb(219,165,60)"/>
+<rect x="120.0" y="200" width="60" height="16" rx="8" fill="rgb(247,242,231)"/>
+<rect x="61" y="78" width="178" height="20" fill="rgb(247,242,231)"/>
+<circle cx="118.0" cy="132" r="9" fill="#2A2320"/>
+<circle cx="182.0" cy="132" r="9" fill="#2A2320"/>
+<path d="M 128.0 158 Q 150.0 178 172.0 158" stroke="#2A2320" stroke-width="6" fill="none" stroke-linecap="round"/>
+<ellipse cx="94.0" cy="150" rx="12" ry="8" fill="rgb(184,133,40)" opacity="0.55"/>
+<ellipse cx="206.0" cy="150" rx="12" ry="8" fill="rgb(184,133,40)" opacity="0.55"/>
+</svg>

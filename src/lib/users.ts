@@ -137,3 +137,14 @@ export async function creditUnits(userId: string, amount: number): Promise<void>
     { $inc: { units: amount }, $set: { updatedAt: new Date() } },
   );
 }
+
+export async function setUserAvatar(userId: string, avatarUrl: string): Promise<PublicUser | null> {
+  if (!ObjectId.isValid(userId)) return null;
+  const collection = await getCollection();
+  const updated = await collection.findOneAndUpdate(
+    { _id: new ObjectId(userId) },
+    { $set: { avatarUrl, updatedAt: new Date() } },
+    { returnDocument: "after" },
+  );
+  return updated ? toPublicUser(updated) : null;
+}

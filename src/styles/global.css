@@ -1311,6 +1311,76 @@ select {
   margin: 0;
 }
 
+.sprite-picker-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+}
+
+.sprite-picker-label {
+  font-size: 0.85rem;
+  color: var(--secondary-text);
+  margin: 0;
+}
+
+.sprite-picker-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.sprite-option-wrap {
+  display: inline-flex;
+}
+
+.sprite-radio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
+.sprite-option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  padding: var(--space-1);
+  border-radius: var(--radius-md);
+  border: 2px solid transparent;
+  background-color: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease-in-out,
+    transform 0.15s var(--ease-spring);
+}
+
+button.sprite-option {
+  font: inherit;
+}
+
+.sprite-option img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.sprite-option:hover {
+  transform: translateY(-2px);
+}
+
+.sprite-radio:checked + .sprite-option,
+.sprite-option.selected {
+  border-color: var(--highlight-color);
+  background-color: color-mix(in srgb, var(--highlight-color) 16%, rgba(255, 255, 255, 0.06));
+}
+
 body.has-bottom-nav {
   padding-bottom: var(--bottom-nav-height);
 }
