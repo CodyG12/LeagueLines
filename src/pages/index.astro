@@ -8,23 +8,15 @@ import Layout from "../layouts/Layout.astro";
 const user = Astro.locals.user;
 ---
 
-{
-  user && (
-    <Layout>
-      <script type="module" src="/src/scripts/modal.js"></script>
-      <script type="module" src="/src/scripts/buttonColor.js"></script>
-      <script type="module" src="/src/scripts/betSlip.js"></script>
-      <script type="module" src="/src/scripts/profileCardTilt.js"></script>
-      <Home />
-    </Layout>
-  )
-}
-{
-  !user && (
-    <Layout>
-      <Nav showCategories={false} />
-      <Landing />
-      <Footer />
-    </Layout>
-  )
-}
+<Layout>
+  {user && <Home />}
+  {
+    !user && (
+      <>
+        <Nav showCategories={false} />
+        <Landing />
+        <Footer />
+      </>
+    )
+  }
+</Layout>
