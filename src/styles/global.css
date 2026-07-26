@@ -1075,23 +1075,39 @@ select {
 
 .pc-avatar-content {
   overflow: visible;
-  transform: translateZ(2);
+  position: relative;
   backface-visibility: hidden;
 }
 
 .pc-avatar-content .avatar {
   width: 100%;
-  height: 50%;
+  height: 100%;
   position: absolute;
-  top: 26%;
+  top: 0;
   left: 0;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
   transform: translateX(calc((var(--pointer-from-left) - 0.5) * 6px)) translateZ(0);
   backface-visibility: hidden;
   will-change: transform;
   transition: transform 120ms ease-out;
-  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.55));
+}
+
+/* Scrim so the always-legible name/line/time text and the frosted
+   bottom bar stay readable regardless of how bright or busy the
+   underlying avatar photo/sprite is, now that it fills the card. */
+.pc-avatar-content::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(5, 5, 6, 0.68) 0%,
+    rgba(5, 5, 6, 0) 30%,
+    rgba(5, 5, 6, 0) 64%,
+    rgba(5, 5, 6, 0.78) 100%
+  );
+  pointer-events: none;
 }
 
 .pc-content:not(.pc-avatar-content) {
@@ -1317,11 +1333,6 @@ select {
 
   .pc-handle {
     font-size: 0.68rem;
-  }
-
-  .pc-avatar-content .avatar {
-    top: 88px;
-    height: calc(100cqh - 168px);
   }
 
   .pc-details {
