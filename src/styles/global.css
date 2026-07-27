@@ -663,6 +663,24 @@ select {
   justify-content: center;
 }
 
+@media (max-width: 640px) {
+  .admin-prop-actions button {
+    padding: var(--space-2) var(--space-3);
+    font-size: 0.8rem;
+  }
+
+  .close-form {
+    flex-direction: column;
+  }
+
+  .close-form select,
+  .close-form button {
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    font-size: 0.8rem;
+  }
+}
+
 /* Landing page */
 .landing-hero {
   position: relative;
