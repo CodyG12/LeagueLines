@@ -69,22 +69,6 @@ const users = await listAllUsers();
         </select>
       </div>
 
-      <!-- <div class="field">
-        <label for="player">Player</label>
-        <select id="player" name="player" required>
-          <option value="" disabled selected>Select player...</option>
-          <optgroup label="Registered Users">
-            {users.map((user) => (
-              <option value={`user:${user.id}`}>{user.firstName} {user.lastName} (@{user.username})</option>
-            ))}
-          </optgroup>
-          <optgroup label="Other Players">
-            {playerOptions.map((option) => <option value={option}>{option}</option>)}
-          </optgroup>
-          <option value="__add_new__">+ Add New...</option>
-        </select>
-      </div> -->
-
       <div class="field-row">
         <div class="field">
           <label for="team">Team (optional)</label>
