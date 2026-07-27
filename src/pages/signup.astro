@@ -6,6 +6,8 @@ import { SPRITE_AVATARS } from "../lib/sprites";
 const error = Astro.url.searchParams.get("error");
 ---
 
+<script src="../scripts/avatarDropzone.js"></script>
+
 <Layout>
   <div class="page-bg beams-page-bg">
     <Beams
@@ -49,39 +51,21 @@ const error = Astro.url.searchParams.get("error");
           <div class="field">
             <label for="firstName">First Name</label>
             <div class="auth-input-wrap">
-              <svg
-                class="auth-input-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.6"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-              >
-                <circle cx="12" cy="8" r="4" />
-                <path d="M4 20c0-4 3.5-6 8-6s8 2 8 6" />
-              </svg>
-              <input class="auth-input" type="text" id="firstName" name="firstName" required autofocus />
+              <input
+                class="auth-input"
+                type="text"
+                id="firstName"
+                name="firstName"
+                placeholder="John"
+                required
+                autofocus
+              />
             </div>
           </div>
           <div class="field">
             <label for="lastName">Last Name</label>
             <div class="auth-input-wrap">
-              <svg
-                class="auth-input-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.6"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-              >
-                <circle cx="12" cy="8" r="4" />
-                <path d="M4 20c0-4 3.5-6 8-6s8 2 8 6" />
-              </svg>
-              <input class="auth-input" type="text" id="lastName" name="lastName" required />
+              <input class="auth-input" type="text" id="lastName" name="lastName" placeholder="Doe" required />
             </div>
           </div>
         </div>
@@ -135,7 +119,65 @@ const error = Astro.url.searchParams.get("error");
         </div>
         <div class="field">
           <label for="avatar">Profile Picture (optional)</label>
-          <input type="file" id="avatar" name="avatar" accept="image/png,image/jpeg,image/webp,image/gif" />
+          <div class="auth-file-drop" id="avatarDropzone">
+            <div class="auth-file-drop-idle">
+              <span class="auth-file-drop-icon" aria-hidden="true">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M12 15V4M12 4l-3.5 3.5M12 4l3.5 3.5" />
+                  <path d="M4 15v3a2 2 0 002 2h12a2 2 0 002-2v-3" />
+                </svg>
+              </span>
+              <p class="auth-file-drop-text">Drag and drop or</p>
+              <p class="auth-file-drop-hint">PNG, JPEG, WEBP or GIF up to 5MB</p>
+              <button type="button" class="auth-file-drop-btn" id="avatarBrowseBtn">
+                Upload File
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M12 4v12M12 16l-4-4M12 16l4-4" />
+                  <path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" />
+                </svg>
+              </button>
+            </div>
+            <div class="auth-file-drop-preview" id="avatarPreview" hidden>
+              <img class="auth-file-drop-thumb" id="avatarThumb" alt="" />
+              <span class="auth-file-drop-filename" id="avatarFilename"></span>
+              <button type="button" class="auth-file-drop-remove" id="avatarRemoveBtn" aria-label="Remove selected file">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M18 6 6 18M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <input
+              type="file"
+              id="avatar"
+              name="avatar"
+              accept="image/png,image/jpeg,image/webp,image/gif"
+              class="auth-file-drop-input"
+            />
+          </div>
+          <p class="auth-error" id="avatarClientError" hidden></p>
         </div>
         <div class="field">
           <label>Or pick an avatar (optional)</label>

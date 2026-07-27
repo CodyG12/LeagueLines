@@ -2,7 +2,7 @@ import { ObjectId, type Collection } from "mongodb";
 import clientPromise from "./mongodb";
 import { hashPassword, verifyUserPassword } from "./userAuth";
 
-export const STARTING_UNITS = 1000;
+export const STARTING_UNITS = 100;
 
 export interface UserDoc {
   _id: ObjectId;
@@ -38,7 +38,10 @@ export async function getCollection(): Promise<Collection<UserDoc>> {
     }
     await collection.createIndex(
       { username: 1 },
-      { unique: true, partialFilterExpression: { username: { $exists: true } } },
+      {
+        unique: true,
+        partialFilterExpression: { username: { $exists: true } },
+      },
     );
   }
   return collection;
@@ -79,7 +82,11 @@ export async function createUser(
   try {
     await collection.insertOne(doc);
   } catch (err) {
-    if (typeof err === "object" && err !== null && (err as { code?: number }).code === 11000) {
+    if (
+      typeof err === "object" &&
+      err !== null &&
+      (err as { code?: number }).code === 11000
+    ) {
       return "duplicate";
     }
     throw err;
@@ -90,7 +97,10 @@ export async function createUser(
 
 export async function usernameExists(username: string): Promise<boolean> {
   const collection = await getCollection();
-  const doc = await collection.findOne({ username: username.toLowerCase() }, { projection: { _id: 1 } });
+  const doc = await collection.findOne(
+    { username: username.toLowerCase() },
+    { projection: { _id: 1 } },
+  );
   return doc !== null;
 }
 
@@ -114,11 +124,17 @@ export async function getUserById(id: string): Promise<PublicUser | null> {
 
 export async function listAllUsers(): Promise<PublicUser[]> {
   const collection = await getCollection();
-  const docs = await collection.find({}).sort({ firstName: 1, lastName: 1 }).toArray();
+  const docs = await collection
+    .find({})
+    .sort({ firstName: 1, lastName: 1 })
+    .toArray();
   return docs.map(toPublicUser);
 }
 
-export async function debitUnits(userId: string, amount: number): Promise<PublicUser | null> {
+export async function debitUnits(
+  userId: string,
+  amount: number,
+): Promise<PublicUser | null> {
   if (!ObjectId.isValid(userId)) return null;
   const collection = await getCollection();
   const updated = await collection.findOneAndUpdate(
@@ -129,7 +145,10 @@ export async function debitUnits(userId: string, amount: number): Promise<Public
   return updated ? toPublicUser(updated) : null;
 }
 
-export async function creditUnits(userId: string, amount: number): Promise<void> {
+export async function creditUnits(
+  userId: string,
+  amount: number,
+): Promise<void> {
   if (!ObjectId.isValid(userId) || amount <= 0) return;
   const collection = await getCollection();
   await collection.updateOne(
@@ -138,7 +157,10 @@ export async function creditUnits(userId: string, amount: number): Promise<void>
   );
 }
 
-export async function setUserAvatar(userId: string, avatarUrl: string): Promise<PublicUser | null> {
+export async function setUserAvatar(
+  userId: string,
+  avatarUrl: string,
+): Promise<PublicUser | null> {
   if (!ObjectId.isValid(userId)) return null;
   const collection = await getCollection();
   const updated = await collection.findOneAndUpdate(

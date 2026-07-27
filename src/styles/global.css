@@ -1652,8 +1652,17 @@ body.has-bottom-nav:has(.open-modal.visible) {
   min-width: 0;
   border: none;
   background: transparent;
-  padding: 0;
   font-size: 0.95rem;
+  /* Text inputs clip their own content to their border-box, and a tight
+     line-height alone isn't reliably enough headroom for the caret glyph
+     across fonts/browsers — pairing it with real vertical padding gives
+     the caret slack that doesn't depend on exact font metrics. A fixed px
+     line-height (not a unitless ratio of a fractional font-size) keeps the
+     box's total height a whole number of pixels, avoiding the soft/
+     "concave" edge that sub-pixel clip boundaries render as on the caret
+     at its resting (empty) position. */
+  line-height: 20px;
+  padding: 4px 0;
   color: var(--primary-text);
 }
 
@@ -1674,4 +1683,166 @@ body.has-bottom-nav:has(.open-modal.visible) {
   text-align: center;
   color: var(--secondary-text);
   font-size: 0.9rem;
+}
+
+/* .field-row's grid items default to min-width: auto, so their min-content
+   size (not the 1fr share) drives column width — the First/Last Name
+   columns were computing wider than .auth-card and pushing Last Name past
+   the card edge. Scoped to .auth-form so the shared .field-row used by the
+   admin "New Prop" form is untouched. */
+.auth-form .field-row > .field {
+  min-width: 0;
+}
+
+/* Signup's avatar dropzone — vanilla-CSS/JS recreation of a drag-and-drop
+   file upload UI (kokonutui.com/docs/inputs/file-upload). No Tailwind or
+   animation-library dependency: a real <input type="file"> is stretched
+   transparent over the whole box (native click-to-browse and native
+   drag-and-drop both just work), with idle/preview markup layered under
+   it purely for visuals. See src/scripts/avatarDropzone.js. */
+.auth-file-drop {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  text-align: center;
+  padding: var(--space-5) var(--space-4);
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-md);
+  background-color: rgba(255, 255, 255, 0.03);
+  transition:
+    border-color 0.2s ease-in-out,
+    background-color 0.2s ease-in-out;
+}
+
+.auth-file-drop--dragover {
+  border-color: var(--highlight-color);
+  background-color: rgba(212, 167, 44, 0.08);
+}
+
+.auth-file-drop-idle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* [hidden] is equal specificity to the plain classes above, and author
+   styles beat the UA stylesheet's default `[hidden] { display: none }`
+   regardless of source order — so idle/preview must reassert it explicitly
+   or the JS-toggled `hidden` attribute has no visual effect. */
+.auth-file-drop-idle[hidden],
+.auth-file-drop-preview[hidden] {
+  display: none;
+}
+
+.auth-file-drop-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.06);
+  color: var(--highlight-color);
+}
+
+.auth-file-drop-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.auth-file-drop-text {
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--primary-text);
+}
+
+.auth-file-drop-hint {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--secondary-text);
+}
+
+.auth-file-drop-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+  padding: var(--space-2) var(--space-4);
+  background-color: transparent;
+  color: var(--primary-text);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  font-size: 0.85rem;
+}
+
+.auth-file-drop-btn:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.auth-file-drop-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.auth-file-drop-preview {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.auth-file-drop-thumb {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  background-color: var(--secondary-bg);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.auth-file-drop-filename {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.85rem;
+  color: var(--primary-text);
+}
+
+.auth-file-drop-remove {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  padding: 0;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--secondary-text);
+  border: none;
+}
+
+.auth-file-drop-remove:hover {
+  background-color: rgba(255, 69, 58, 0.15);
+  color: var(--danger-color);
+}
+
+.auth-file-drop-remove svg {
+  width: 14px;
+  height: 14px;
+}
+
+.auth-file-drop-input {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0;
+  cursor: pointer;
 }
