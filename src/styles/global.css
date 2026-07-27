@@ -1869,3 +1869,70 @@ body.has-bottom-nav:has(.open-modal.visible) {
   opacity: 0;
   cursor: pointer;
 }
+
+/* Signup loading overlay — shown from form "submit" until the browser
+   navigates away (see src/scripts/signupLoading.js). Spinner adapted from
+   a supplied "Swirling" component: same SVG circle + dash/spin keyframes,
+   ported from a React island to plain markup since it has no interactivity
+   beyond the CSS animation itself. Respects prefers-reduced-motion via the
+   existing sitewide `*` animation-duration override above. */
+.auth-loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  background: rgba(5, 5, 6, 0.92);
+  backdrop-filter: blur(4px);
+}
+
+/* [hidden] is equal specificity to the plain class above, and author
+   styles beat the UA stylesheet's default `[hidden] { display: none }`
+   regardless of source order (see the .auth-file-drop-idle/-preview rule
+   above for the same issue) — reassert it explicitly. */
+.auth-loading-overlay[hidden] {
+  display: none;
+}
+
+.auth-loading-spinner {
+  width: 64px;
+  height: 64px;
+  color: var(--highlight-color);
+}
+
+.auth-loading-spinner-circle {
+  transform-origin: center;
+  animation:
+    auth-loading-spinner-dash 1.5s ease-in-out infinite alternate,
+    auth-loading-spinner-spin 2s linear infinite;
+}
+
+@keyframes auth-loading-spinner-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes auth-loading-spinner-dash {
+  0% {
+    stroke-dasharray: 1, 800;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 400, 400;
+    stroke-dashoffset: -200px;
+  }
+  100% {
+    stroke-dasharray: 800, 1;
+    stroke-dashoffset: -800px;
+  }
+}
+
+.auth-loading-text {
+  color: var(--primary-text);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
