@@ -1,59 +1,158 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import Beams from "../components/react/Beams";
 import { SPRITE_AVATARS } from "../lib/sprites";
 
 const error = Astro.url.searchParams.get("error");
 ---
 
 <Layout>
-  <main class="container admin-login">
-    <h2 class="title">Sign Up</h2>
-    {error === "duplicate" && <p class="form-error">An account with that username already exists.</p>}
-    {error === "missing-fields" && <p class="form-error">Please fill out all fields.</p>}
-    {error === "invalid-username" && <p class="form-error">Username must be 3–20 characters, using only letters, numbers, and underscores.</p>}
-    {error === "short-password" && <p class="form-error">Password must be at least 8 characters.</p>}
-    {error === "invalid-avatar-type" && <p class="form-error">Profile picture must be a PNG, JPEG, WEBP, or GIF image.</p>}
-    {error === "avatar-too-large" && <p class="form-error">Profile picture must be smaller than 5MB.</p>}
-    {error === "avatar-upload-failed" && <p class="form-error">We couldn't upload your profile picture right now. Please try again, or pick one of the mascot avatars instead.</p>}
-    <form method="POST" action="/api/auth/signup" class="admin-form" enctype="multipart/form-data" data-astro-reload>
-      <label for="firstName">First Name</label>
-      <input type="text" id="firstName" name="firstName" required autofocus />
-      <label for="lastName">Last Name</label>
-      <input type="text" id="lastName" name="lastName" required />
-      <label for="username">Username</label>
-      <input
-        type="text"
-        id="username"
-        name="username"
-        minlength="3"
-        maxlength="20"
-        pattern="[a-zA-Z0-9_]{3,20}"
-        title="3-20 characters: letters, numbers, and underscores only"
-        required
-      />
-      <label for="password">Password</label>
-      <input type="password" id="password" name="password" minlength="8" required />
-      <label for="avatar">Profile Picture (optional)</label>
-      <input type="file" id="avatar" name="avatar" accept="image/png,image/jpeg,image/webp,image/gif" />
-      <label>Or pick an avatar (optional)</label>
-      <div class="sprite-picker-grid">
-        {SPRITE_AVATARS.map((sprite, index) => (
-          <span class="sprite-option-wrap">
+  <div class="page-bg beams-page-bg">
+    <Beams
+      client:load
+      beamWidth={2}
+      beamHeight={15}
+      beamNumber={12}
+      lightColor="#7c5cfc"
+      secondaryLightColor="#d4a72c"
+      speed={2}
+      noiseIntensity={1.75}
+      scale={0.2}
+      rotation={0}
+      backgroundColor="#050506"
+    />
+  </div>
+  <main class="auth-page">
+    <a href="/" class="site-brand nav-raise">
+      <span class="site-brand-league">League</span><span class="site-brand-lines">Lines</span>
+    </a>
+    <div class="auth-card">
+      <h2>Sign Up</h2>
+      {error === "duplicate" && <p class="auth-error">An account with that username already exists.</p>}
+      {error === "missing-fields" && <p class="auth-error">Please fill out all fields.</p>}
+      {error === "invalid-username" && (
+        <p class="auth-error">Username must be 3–20 characters, using only letters, numbers, and underscores.</p>
+      )}
+      {error === "short-password" && <p class="auth-error">Password must be at least 8 characters.</p>}
+      {error === "invalid-avatar-type" && (
+        <p class="auth-error">Profile picture must be a PNG, JPEG, WEBP, or GIF image.</p>
+      )}
+      {error === "avatar-too-large" && <p class="auth-error">Profile picture must be smaller than 5MB.</p>}
+      {error === "avatar-upload-failed" && (
+        <p class="auth-error">
+          We couldn't upload your profile picture right now. Please try again, or pick one of the mascot avatars
+          instead.
+        </p>
+      )}
+      <form method="POST" action="/api/auth/signup" class="auth-form" enctype="multipart/form-data" data-astro-reload>
+        <div class="field-row">
+          <div class="field">
+            <label for="firstName">First Name</label>
+            <div class="auth-input-wrap">
+              <svg
+                class="auth-input-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 20c0-4 3.5-6 8-6s8 2 8 6" />
+              </svg>
+              <input class="auth-input" type="text" id="firstName" name="firstName" required autofocus />
+            </div>
+          </div>
+          <div class="field">
+            <label for="lastName">Last Name</label>
+            <div class="auth-input-wrap">
+              <svg
+                class="auth-input-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 20c0-4 3.5-6 8-6s8 2 8 6" />
+              </svg>
+              <input class="auth-input" type="text" id="lastName" name="lastName" required />
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label for="username">Username</label>
+          <div class="auth-input-wrap">
+            <svg
+              class="auth-input-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 20c0-4 3.5-6 8-6s8 2 8 6" />
+            </svg>
             <input
-              type="radio"
-              id={`sprite-${index}`}
-              name="avatarSprite"
-              value={sprite}
-              class="sprite-radio"
+              class="auth-input"
+              type="text"
+              id="username"
+              name="username"
+              minlength="3"
+              maxlength="20"
+              pattern="[a-zA-Z0-9_]{3,20}"
+              title="3-20 characters: letters, numbers, and underscores only"
+              required
             />
-            <label for={`sprite-${index}`} class="sprite-option">
-              <img src={sprite} alt="" loading="lazy" />
-            </label>
-          </span>
-        ))}
-      </div>
-      <button type="submit">Sign Up</button>
-    </form>
-    <p><a href="/login">Already have an account? Log in</a></p>
+          </div>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <div class="auth-input-wrap">
+            <svg
+              class="auth-input-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="5" y="11" width="14" height="9" rx="2" />
+              <path d="M8 11V7a4 4 0 018 0v4" />
+            </svg>
+            <input class="auth-input" type="password" id="password" name="password" minlength="8" required />
+          </div>
+        </div>
+        <div class="field">
+          <label for="avatar">Profile Picture (optional)</label>
+          <input type="file" id="avatar" name="avatar" accept="image/png,image/jpeg,image/webp,image/gif" />
+        </div>
+        <div class="field">
+          <label>Or pick an avatar (optional)</label>
+          <div class="sprite-picker-grid">
+            {SPRITE_AVATARS.map((sprite, index) => (
+              <span class="sprite-option-wrap">
+                <input type="radio" id={`sprite-${index}`} name="avatarSprite" value={sprite} class="sprite-radio" />
+                <label for={`sprite-${index}`} class="sprite-option">
+                  <img src={sprite} alt="" loading="lazy" />
+                </label>
+              </span>
+            ))}
+          </div>
+        </div>
+        <button type="submit">Sign Up</button>
+      </form>
+    </div>
+    <p class="auth-footer-link">Already have an account? <a href="/login">Log in</a></p>
   </main>
 </Layout>
