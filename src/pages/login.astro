@@ -1,20 +1,75 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import Beams from "../components/react/Beams";
 
 const hasError = Astro.url.searchParams.has("error");
 ---
 
 <Layout>
-  <main class="container admin-login">
-    <h2 class="title">Log In</h2>
-    {hasError && <p class="form-error">Invalid username or password.</p>}
-    <form method="POST" action="/api/auth/login" class="admin-form" data-astro-reload>
-      <label for="username">Username</label>
-      <input type="text" id="username" name="username" required autofocus />
-      <label for="password">Password</label>
-      <input type="password" id="password" name="password" required />
-      <button type="submit">Log In</button>
-    </form>
-    <p><a href="/signup">Need an account? Sign up</a></p>
+  <div class="page-bg beams-page-bg">
+    <Beams
+      client:load
+      beamWidth={2}
+      beamHeight={15}
+      beamNumber={12}
+      lightColor="#7c5cfc"
+      secondaryLightColor="#d4a72c"
+      speed={2}
+      noiseIntensity={1.75}
+      scale={0.2}
+      rotation={0}
+      backgroundColor="#050506"
+    />
+  </div>
+  <main class="auth-page">
+    <a href="/" class="site-brand nav-raise">
+      <span class="site-brand-league">League</span><span class="site-brand-lines">Lines</span>
+    </a>
+    <div class="auth-card">
+      <h2>Log In</h2>
+      {hasError && <p class="auth-error">Invalid username or password.</p>}
+      <form method="POST" action="/api/auth/login" class="auth-form" data-astro-reload>
+        <div class="field">
+          <label for="username">Username</label>
+          <div class="auth-input-wrap">
+            <svg
+              class="auth-input-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 20c0-4 3.5-6 8-6s8 2 8 6" />
+            </svg>
+            <input class="auth-input" type="text" id="username" name="username" required autofocus />
+          </div>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <div class="auth-input-wrap">
+            <svg
+              class="auth-input-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="5" y="11" width="14" height="9" rx="2" />
+              <path d="M8 11V7a4 4 0 018 0v4" />
+            </svg>
+            <input class="auth-input" type="password" id="password" name="password" required />
+          </div>
+        </div>
+        <button type="submit">Log In</button>
+      </form>
+    </div>
+    <p class="auth-footer-link">Need an account? <a href="/signup">Sign up</a></p>
   </main>
 </Layout>
