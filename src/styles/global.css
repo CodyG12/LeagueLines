@@ -489,7 +489,11 @@ select {
 }
 
 .modal-inner {
-  background-color: var(--secondary-bg);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent-purple) 35%, var(--secondary-bg)),
+    var(--secondary-bg)
+  );
   color: var(--primary-text);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   box-shadow: var(--shadow-elevated);
