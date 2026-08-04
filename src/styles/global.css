@@ -198,16 +198,13 @@ select {
   color: var(--primary-text);
 }
 
-.leg-stake,
-#parlayStake {
+#stakeInput {
   -moz-appearance: textfield;
   appearance: textfield;
 }
 
-.leg-stake::-webkit-outer-spin-button,
-.leg-stake::-webkit-inner-spin-button,
-#parlayStake::-webkit-outer-spin-button,
-#parlayStake::-webkit-inner-spin-button {
+#stakeInput::-webkit-outer-spin-button,
+#stakeInput::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
@@ -979,10 +976,6 @@ select {
   text-align: left;
 }
 
-.bet-slip-leg input {
-  width: 5rem;
-}
-
 .leg-remove-btn {
   background: rgba(239, 68, 68, 0.15);
   color: var(--danger-color);
@@ -1013,12 +1006,74 @@ select {
   font-size: 0.85rem;
 }
 
-.bet-slip-summary {
+.bet-slip-footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: var(--space-4) 0;
+}
+
+.bet-slip-footer-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.bet-slip-multiplier {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  background-color: var(--surface-2);
+  color: var(--highlight-color);
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+.bet-slip-payout-line {
   font-family: var(--font-num);
   font-variant-numeric: tabular-nums;
   color: var(--primary-text);
   font-weight: 700;
-  margin: var(--space-2) 0;
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+.bet-slip-stake-row {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-2);
+}
+
+.stake-chip {
+  flex: 0 0 auto;
+  background-color: var(--surface-2);
+  color: var(--primary-text);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.stake-chip:hover {
+  background-color: color-mix(in srgb, var(--highlight-color) 20%, var(--surface-2));
+}
+
+#stakeInput {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+}
+
+#placeBetBtn {
+  width: 100%;
+  margin-top: var(--space-2);
 }
 
 /* Toast (win celebration) */
