@@ -4,6 +4,12 @@ import { animateNumber } from "./animateCounter.js";
 const MAX_LEGS = 10;
 const LEG_ODDS = 21 / 11;
 
+// How far (px) a pick row slides left to reveal its Delete panel, and how
+// many px of initial movement decide whether a touch is a horizontal swipe
+// or a vertical scroll.
+const SWIPE_REVEAL_PX = 96;
+const SWIPE_DIRECTION_LOCK_PX = 10;
+
 function parlayMultiplier(legCount) {
   const n = Math.min(Math.max(legCount, 0), MAX_LEGS);
   return Math.round(LEG_ODDS ** n * 2) / 2;
@@ -33,6 +39,81 @@ function init() {
   const isLoggedIn = document.body.dataset.loggedIn === "true";
 
   if (!openBtn || !modal || !legsContainer) return;
+
+  let openLegWrap = null;
+
+  function closeRevealedLegIfOutside(target) {
+    if (!openLegWrap) return;
+    if (openLegWrap.contains(target)) return;
+    openLegWrap.classList.remove("revealed");
+    openLegWrap = null;
+  }
+
+  function attachLegSwipe(wrap, row) {
+    let startX = 0;
+    let startY = 0;
+    let dragDeltaX = 0;
+    let axis = null;
+
+    wrap.addEventListener(
+      "touchstart",
+      (event) => {
+        startX = event.touches[0].clientX;
+        startY = event.touches[0].clientY;
+        dragDeltaX = 0;
+        axis = null;
+        wrap.classList.add("dragging");
+      },
+      { passive: true },
+    );
+
+    wrap.addEventListener(
+      "touchmove",
+      (event) => {
+        const touch = event.touches[0];
+        const deltaX = touch.clientX - startX;
+        const deltaY = touch.clientY - startY;
+
+        if (axis === null) {
+          if (Math.abs(deltaX) < SWIPE_DIRECTION_LOCK_PX && Math.abs(deltaY) < SWIPE_DIRECTION_LOCK_PX) {
+            return;
+          }
+          axis = Math.abs(deltaX) > Math.abs(deltaY) ? "x" : "y";
+        }
+
+        if (axis !== "x") return;
+
+        event.preventDefault();
+        const base = wrap.classList.contains("revealed") ? -SWIPE_REVEAL_PX : 0;
+        dragDeltaX = Math.min(0, Math.max(-SWIPE_REVEAL_PX, base + deltaX));
+        row.style.transform = `translateX(${dragDeltaX}px)`;
+      },
+      { passive: false },
+    );
+
+    wrap.addEventListener("touchend", () => {
+      wrap.classList.remove("dragging");
+      row.style.transform = "";
+
+      if (axis !== "x") {
+        axis = null;
+        return;
+      }
+      axis = null;
+
+      const shouldReveal = dragDeltaX <= -SWIPE_REVEAL_PX / 2;
+      if (shouldReveal) {
+        if (openLegWrap && openLegWrap !== wrap) {
+          openLegWrap.classList.remove("revealed");
+        }
+        wrap.classList.add("revealed");
+        openLegWrap = wrap;
+      } else {
+        wrap.classList.remove("revealed");
+        if (openLegWrap === wrap) openLegWrap = null;
+      }
+    });
+  }
 
   function getSelectedPicks() {
     const picks = [];
@@ -112,7 +193,23 @@ function init() {
     const mode = currentMode();
 
     legsContainer.innerHTML = "";
+    openLegWrap = null;
+
     picks.forEach(({ prop, pick }) => {
+      const wrap = document.createElement("div");
+      wrap.className = "bet-slip-leg-wrap";
+
+      const deleteAction = document.createElement("button");
+      deleteAction.type = "button";
+      deleteAction.className = "bet-slip-leg-delete-action";
+      deleteAction.textContent = "Delete";
+      deleteAction.addEventListener("click", () => {
+        deselectPick(prop.id, pick);
+        syncOpenButtonVisibility();
+        renderLegs();
+      });
+      wrap.appendChild(deleteAction);
+
       const row = document.createElement("div");
       row.className = "bet-slip-leg";
 
@@ -132,7 +229,9 @@ function init() {
       });
       row.appendChild(removeBtn);
 
-      legsContainer.appendChild(row);
+      wrap.appendChild(row);
+      attachLegSwipe(wrap, row);
+      legsContainer.appendChild(wrap);
     });
 
     if (betModeLabel) {
@@ -216,6 +315,7 @@ function init() {
     document.removeEventListener("click", delegatedClickHandler);
   }
   delegatedClickHandler = (event) => {
+    closeRevealedLegIfOutside(event.target);
     if (event.target.closest(".over-btn, .under-btn")) {
       renderLegs();
     }

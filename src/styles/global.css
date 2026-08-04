@@ -979,6 +979,14 @@ select {
 }
 
 /* Bet slip */
+.bet-slip-leg-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-2);
+  touch-action: pan-y;
+}
+
 .bet-slip-leg {
   display: flex;
   align-items: center;
@@ -989,8 +997,37 @@ select {
   color: var(--primary-text);
   border-radius: var(--radius-md);
   padding: var(--space-3);
-  margin-bottom: var(--space-2);
   text-align: left;
+  position: relative;
+  z-index: 1;
+  transition: transform 0.2s ease-out;
+}
+
+.bet-slip-leg-wrap.dragging .bet-slip-leg {
+  transition: none;
+}
+
+.bet-slip-leg-wrap.revealed .bet-slip-leg {
+  transform: translateX(-96px);
+}
+
+.bet-slip-leg-delete-action {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 var(--space-4) 0 0;
+  background-color: var(--danger-color);
+  color: white;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+}
+
+.bet-slip-leg-delete-action:hover,
+.bet-slip-leg-delete-action:active {
+  background-color: var(--danger-color);
 }
 
 .leg-remove-btn {
