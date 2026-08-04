@@ -4,6 +4,12 @@ import { animateNumber } from "./animateCounter.js";
 const MAX_LEGS = 10;
 const LEG_ODDS = 21 / 11;
 
+// How far (px) a pick row slides left to reveal its Delete panel, and how
+// many px of initial movement decide whether a touch is a horizontal swipe
+// or a vertical scroll.
+const SWIPE_REVEAL_PX = 96;
+const SWIPE_DIRECTION_LOCK_PX = 10;
+
 function parlayMultiplier(legCount) {
   const n = Math.min(Math.max(legCount, 0), MAX_LEGS);
   return Math.round(LEG_ODDS ** n * 2) / 2;
@@ -21,10 +27,11 @@ function init() {
   const openBtn = document.getElementById("openModal");
   const modal = document.getElementById("modal");
   const legsContainer = document.getElementById("bet-slip-legs");
-  const parlayStakeWrap = document.getElementById("parlay-stake-wrap");
-  const parlayStakeInput = document.getElementById("parlayStake");
+  const betSlipFooter = document.getElementById("bet-slip-footer");
+  const stakeInput = document.getElementById("stakeInput");
+  const multiplierEl = document.getElementById("bet-slip-multiplier");
+  const payoutLineEl = document.getElementById("bet-slip-payout-line");
   const betModeLabel = document.getElementById("bet-mode-label");
-  const summaryEl = document.getElementById("bet-slip-summary");
   const errorEl = document.getElementById("bet-slip-error");
   const placeBetBtn = document.getElementById("placeBetBtn");
   const betslipCountEl = document.getElementById("betslip-count");
@@ -32,6 +39,81 @@ function init() {
   const isLoggedIn = document.body.dataset.loggedIn === "true";
 
   if (!openBtn || !modal || !legsContainer) return;
+
+  let openLegWrap = null;
+
+  function closeRevealedLegIfOutside(target) {
+    if (!openLegWrap) return;
+    if (openLegWrap.contains(target)) return;
+    openLegWrap.classList.remove("revealed");
+    openLegWrap = null;
+  }
+
+  function attachLegSwipe(wrap, row) {
+    let startX = 0;
+    let startY = 0;
+    let dragDeltaX = 0;
+    let axis = null;
+
+    wrap.addEventListener(
+      "touchstart",
+      (event) => {
+        startX = event.touches[0].clientX;
+        startY = event.touches[0].clientY;
+        dragDeltaX = 0;
+        axis = null;
+        wrap.classList.add("dragging");
+      },
+      { passive: true },
+    );
+
+    wrap.addEventListener(
+      "touchmove",
+      (event) => {
+        const touch = event.touches[0];
+        const deltaX = touch.clientX - startX;
+        const deltaY = touch.clientY - startY;
+
+        if (axis === null) {
+          if (Math.abs(deltaX) < SWIPE_DIRECTION_LOCK_PX && Math.abs(deltaY) < SWIPE_DIRECTION_LOCK_PX) {
+            return;
+          }
+          axis = Math.abs(deltaX) > Math.abs(deltaY) ? "x" : "y";
+        }
+
+        if (axis !== "x") return;
+
+        event.preventDefault();
+        const base = wrap.classList.contains("revealed") ? -SWIPE_REVEAL_PX : 0;
+        dragDeltaX = Math.min(0, Math.max(-SWIPE_REVEAL_PX, base + deltaX));
+        row.style.transform = `translateX(${dragDeltaX}px)`;
+      },
+      { passive: false },
+    );
+
+    wrap.addEventListener("touchend", () => {
+      wrap.classList.remove("dragging");
+      row.style.transform = "";
+
+      if (axis !== "x") {
+        axis = null;
+        return;
+      }
+      axis = null;
+
+      const shouldReveal = dragDeltaX <= -SWIPE_REVEAL_PX / 2;
+      if (shouldReveal) {
+        if (openLegWrap && openLegWrap !== wrap) {
+          openLegWrap.classList.remove("revealed");
+        }
+        wrap.classList.add("revealed");
+        openLegWrap = wrap;
+      } else {
+        wrap.classList.remove("revealed");
+        if (openLegWrap === wrap) openLegWrap = null;
+      }
+    });
+  }
 
   function getSelectedPicks() {
     const picks = [];
@@ -92,25 +174,17 @@ function init() {
     const picks = getSelectedPicks();
 
     if (picks.length === 0) {
-      summaryEl.textContent = "";
       updateMiniBar();
       return;
     }
 
     const multiplier = parlayMultiplier(picks.length);
-
-    let stake = 0;
-    if (currentMode() === "parlay") {
-      stake = Number(parlayStakeInput.value) || 0;
-    } else {
-      legsContainer.querySelectorAll(".leg-stake").forEach((input) => {
-        stake += Number(input.value) || 0;
-      });
-    }
-
+    const stake = Number(stakeInput.value) || 0;
     const potentialWinnings = Math.round(stake * multiplier * 100) / 100;
-    summaryEl.textContent =
-      `Multiplier: ${multiplier.toFixed(1)}x — Potential winnings: ${potentialWinnings} units`;
+
+    multiplierEl.textContent = `${multiplier.toFixed(1)}x`;
+    payoutLineEl.innerHTML =
+      `${stake} units pays <span class="bet-slip-payout-value${stake > 0 ? " has-stake" : ""}">${potentialWinnings}</span> units`;
     updateMiniBar();
   }
 
@@ -119,25 +193,34 @@ function init() {
     const mode = currentMode();
 
     legsContainer.innerHTML = "";
+    openLegWrap = null;
+
     picks.forEach(({ prop, pick }) => {
+      const wrap = document.createElement("div");
+      wrap.className = "bet-slip-leg-wrap";
+
+      const deleteAction = document.createElement("button");
+      deleteAction.type = "button";
+      deleteAction.className = "bet-slip-leg-delete-action";
+      deleteAction.textContent = "Delete";
+      // Touch-only affordance that duplicates the "×" button and sits
+      // visually behind the row until swiped into view -- keep it out of
+      // the keyboard/screen-reader tab order so it doesn't shadow "×".
+      deleteAction.setAttribute("aria-hidden", "true");
+      deleteAction.tabIndex = -1;
+      deleteAction.addEventListener("click", () => {
+        deselectPick(prop.id, pick);
+        syncOpenButtonVisibility();
+        renderLegs();
+      });
+      wrap.appendChild(deleteAction);
+
       const row = document.createElement("div");
       row.className = "bet-slip-leg";
 
       const label = document.createElement("span");
       label.textContent = `${prop.player} — ${pick} ${prop.line} ${prop.stat}`;
       row.appendChild(label);
-
-      if (mode === "single") {
-        const input = document.createElement("input");
-        input.type = "number";
-        input.min = "1";
-        input.step = "1";
-        input.placeholder = "stake";
-        input.className = "leg-stake";
-        input.dataset.propId = prop.id;
-        input.dataset.pick = pick;
-        row.appendChild(input);
-      }
 
       const removeBtn = document.createElement("button");
       removeBtn.type = "button";
@@ -151,7 +234,9 @@ function init() {
       });
       row.appendChild(removeBtn);
 
-      legsContainer.appendChild(row);
+      wrap.appendChild(row);
+      attachLegSwipe(wrap, row);
+      legsContainer.appendChild(wrap);
     });
 
     if (betModeLabel) {
@@ -159,7 +244,7 @@ function init() {
         mode === "parlay" ? `Parlay — ${picks.length} picks` : "Individual bet";
     }
 
-    parlayStakeWrap.hidden = mode !== "parlay";
+    betSlipFooter.hidden = picks.length === 0;
     updateSummary();
   }
 
@@ -172,8 +257,16 @@ function init() {
     renderLegs();
   });
 
-  legsContainer.addEventListener("input", updateSummary);
-  parlayStakeInput?.addEventListener("input", updateSummary);
+  stakeInput.addEventListener("input", updateSummary);
+
+  document.querySelectorAll(".stake-chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      const add = Number(chip.dataset.add) || 0;
+      const current = Number(stakeInput.value) || 0;
+      stakeInput.value = String(current + add);
+      updateSummary();
+    });
+  });
 
   placeBetBtn?.addEventListener("click", async () => {
     errorEl.textContent = "";
@@ -185,23 +278,19 @@ function init() {
     }
 
     const mode = currentMode();
+    const stake = Number(stakeInput.value);
     let body;
 
     if (mode === "parlay") {
       body = {
         mode: "parlay",
-        stake: Number(parlayStakeInput.value),
+        stake,
         picks: picks.map(({ prop, pick }) => ({ propId: prop.id, pick })),
       };
     } else {
-      const legStakeInputs = legsContainer.querySelectorAll(".leg-stake");
       body = {
         mode: "single",
-        picks: Array.from(legStakeInputs).map((input) => ({
-          propId: input.dataset.propId,
-          pick: input.dataset.pick,
-          stake: Number(input.value),
-        })),
+        picks: picks.map(({ prop, pick }) => ({ propId: prop.id, pick, stake })),
       };
     }
 
@@ -231,6 +320,7 @@ function init() {
     document.removeEventListener("click", delegatedClickHandler);
   }
   delegatedClickHandler = (event) => {
+    closeRevealedLegIfOutside(event.target);
     if (event.target.closest(".over-btn, .under-btn")) {
       renderLegs();
     }

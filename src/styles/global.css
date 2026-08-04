@@ -198,16 +198,13 @@ select {
   color: var(--primary-text);
 }
 
-.leg-stake,
-#parlayStake {
+#stakeInput {
   -moz-appearance: textfield;
   appearance: textfield;
 }
 
-.leg-stake::-webkit-outer-spin-button,
-.leg-stake::-webkit-inner-spin-button,
-#parlayStake::-webkit-outer-spin-button,
-#parlayStake::-webkit-inner-spin-button {
+#stakeInput::-webkit-outer-spin-button,
+#stakeInput::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
@@ -492,7 +489,11 @@ select {
 }
 
 .modal-inner {
-  background-color: var(--secondary-bg);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent-purple) 35%, var(--secondary-bg)),
+    var(--secondary-bg)
+  );
   color: var(--primary-text);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   box-shadow: var(--shadow-elevated);
@@ -520,6 +521,19 @@ select {
     border-radius: var(--radius-lg);
     margin-bottom: var(--space-6);
   }
+}
+
+.bet-slip-handle {
+  width: 40px;
+  height: 4px;
+  margin: 0 auto var(--space-4);
+  border-radius: var(--radius-pill);
+  background-color: rgba(255, 255, 255, 0.25);
+  touch-action: none;
+}
+
+.modal-inner.dragging {
+  transition: none;
 }
 
 .modal-inner h2 {
@@ -965,22 +979,59 @@ select {
 }
 
 /* Bet slip */
+.bet-slip-leg-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-2);
+  touch-action: pan-y;
+}
+
 .bet-slip-leg {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  background-color: rgba(255, 255, 255, 0.05);
+  /* Opaque (not the translucent rgba(255,255,255,0.05) this had before the
+     swipe-to-delete panel sat behind it) -- color-mix bakes in the same
+     visual tint against --secondary-bg so it still masks the red Delete
+     panel underneath at rest, instead of letting it bleed through. */
+  background-color: color-mix(in srgb, white 5%, var(--secondary-bg));
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--primary-text);
   border-radius: var(--radius-md);
   padding: var(--space-3);
-  margin-bottom: var(--space-2);
   text-align: left;
+  position: relative;
+  z-index: 1;
+  transition: transform 0.2s ease-out;
 }
 
-.bet-slip-leg input {
-  width: 5rem;
+.bet-slip-leg-wrap.dragging .bet-slip-leg {
+  transition: none;
+}
+
+.bet-slip-leg-wrap.revealed .bet-slip-leg {
+  transform: translateX(-96px);
+}
+
+.bet-slip-leg-delete-action {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 var(--space-4) 0 0;
+  background-color: var(--danger-color);
+  color: white;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+}
+
+.bet-slip-leg-delete-action:hover,
+.bet-slip-leg-delete-action:active {
+  background-color: var(--danger-color);
 }
 
 .leg-remove-btn {
@@ -1013,12 +1064,82 @@ select {
   font-size: 0.85rem;
 }
 
-.bet-slip-summary {
+.bet-slip-footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: var(--space-4) 0;
+}
+
+.bet-slip-footer-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.bet-slip-multiplier {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  background-color: var(--surface-2);
+  color: var(--highlight-color);
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+.bet-slip-payout-line {
   font-family: var(--font-num);
   font-variant-numeric: tabular-nums;
   color: var(--primary-text);
   font-weight: 700;
-  margin: var(--space-2) 0;
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+.bet-slip-payout-value.has-stake {
+  color: var(--success-color);
+}
+
+.bet-slip-stake-row {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-2);
+}
+
+.stake-chip {
+  flex: 0 0 auto;
+  background-color: var(--surface-2);
+  color: var(--primary-text);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.stake-chip:hover {
+  background-color: color-mix(in srgb, var(--highlight-color) 16%, var(--surface-2));
+}
+
+#stakeInput {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+}
+
+#placeBetBtn {
+  width: 100%;
+  margin-top: var(--space-2);
+}
+
+#closeModal {
+  margin-top: var(--space-3);
 }
 
 /* Toast (win celebration) */
