@@ -1,7 +1,9 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Nav from "../components/sub_components/Nav.astro";
+import { Badges } from "../components/react/Badges";
 import { SPRITE_AVATARS, isSpriteAvatar } from "../lib/sprites";
+import { getBadgeDisplaysForUser } from "../lib/badges";
 
 if (!Astro.locals.user) {
   return Astro.redirect("/login");
@@ -9,6 +11,7 @@ if (!Astro.locals.user) {
 
 const user = Astro.locals.user;
 const showSpritePicker = !user.avatarUrl || isSpriteAvatar(user.avatarUrl);
+const badges = await getBadgeDisplaysForUser(user.id);
 ---
 
 <Layout>
@@ -45,5 +48,16 @@ const showSpritePicker = !user.avatarUrl || isSpriteAvatar(user.avatarUrl);
         </div>
       )
     }
+
+    <div class="card badges-card">
+      <p class="sprite-picker-label">Badges</p>
+      <Badges client:load badges={badges} />
+    </div>
   </main>
 </Layout>
+
+<style>
+  .badges-card {
+    text-align: left;
+  }
+</style>

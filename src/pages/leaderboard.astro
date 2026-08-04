@@ -2,10 +2,12 @@
 import Layout from "../layouts/Layout.astro";
 import Nav from "../components/sub_components/Nav.astro";
 import Lightfall from "../components/react/Lightfall";
-import { listAllUsers } from "../lib/users";
+import { StandingsBoardIsland } from "../components/react/StandingsBoardIsland";
+import { computeStandings, type Period } from "../lib/standings";
 
-const users = await listAllUsers();
-const ranked = [...users].sort((a, b) => b.units - a.units);
+const periodParam = Astro.url.searchParams.get("period");
+const period: Period = periodParam === "season" ? "season" : "week";
+const { standings, upset, worstBeat } = await computeStandings(period);
 ---
 
 <Layout>
@@ -13,18 +15,19 @@ const ranked = [...users].sort((a, b) => b.units - a.units);
     <Lightfall client:load colors={["#d4a72c", "#7c5cfc"]} backgroundColor="#151417" />
   </div>
   <Nav showCategories={false} />
-  <main class="container">
-    <h2 class="title">Leaderboard</h2>
-    <div class="leaderboard-list">
-      {ranked.map((user, index) => (
-        <div class="leaderboard-row">
-          <span class="leaderboard-rank">{index + 1}</span>
-          <img class="prop-avatar" src={user.avatarUrl ?? "/avatar-placeholder.svg"} alt="" loading="lazy" />
-          <span class="leaderboard-name">{user.firstName} {user.lastName} (@{user.username})</span>
-          <span class="units-pill">{user.units} units</span>
-        </div>
-      ))}
-      {ranked.length === 0 && <p>No users yet.</p>}
-    </div>
+  <main class="container standings-wrap">
+    <StandingsBoardIsland
+      client:load
+      period={period}
+      standings={standings}
+      upset={upset}
+      worstBeat={worstBeat}
+    />
   </main>
 </Layout>
+
+<style>
+  .standings-wrap {
+    text-align: left;
+  }
+</style>

@@ -9,6 +9,7 @@ import {
 } from "../../../../lib/props";
 import { settleBetsForProp } from "../../../../lib/bets";
 import { getUserById } from "../../../../lib/users";
+import { checkAndAwardBadges } from "../../../../lib/badges";
 
 const VALID_RESULTS: PropResult[] = ["over", "under", "push"];
 
@@ -97,7 +98,8 @@ export const PATCH: APIRoute = async ({ params, request }) => {
   if (!prop) return jsonResponse({ error: "Not found" }, 404);
 
   if (parsed.status === "closed" && parsed.result) {
-    await settleBetsForProp(prop.id, parsed.result);
+    const settledUserIds = await settleBetsForProp(prop.id, parsed.result);
+    await Promise.all(settledUserIds.map((userId) => checkAndAwardBadges(userId)));
     await deleteProp(prop.id);
   }
 
