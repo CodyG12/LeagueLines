@@ -1043,6 +1043,10 @@ select {
   text-align: right;
 }
 
+.bet-slip-payout-value.has-stake {
+  color: var(--success-color);
+}
+
 .bet-slip-stake-row {
   display: flex;
   align-items: stretch;
@@ -1074,6 +1078,10 @@ select {
 #placeBetBtn {
   width: 100%;
   margin-top: var(--space-2);
+}
+
+#closeModal {
+  margin-top: var(--space-3);
 }
 
 /* Toast (win celebration) */

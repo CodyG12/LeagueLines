@@ -102,7 +102,8 @@ function init() {
     const potentialWinnings = Math.round(stake * multiplier * 100) / 100;
 
     multiplierEl.textContent = `${multiplier.toFixed(1)}x`;
-    payoutLineEl.textContent = `${stake} units pays ${potentialWinnings} units`;
+    payoutLineEl.innerHTML =
+      `${stake} units pays <span class="bet-slip-payout-value${stake > 0 ? " has-stake" : ""}">${potentialWinnings}</span> units`;
     updateMiniBar();
   }
 
