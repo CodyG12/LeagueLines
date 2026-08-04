@@ -21,10 +21,11 @@ function init() {
   const openBtn = document.getElementById("openModal");
   const modal = document.getElementById("modal");
   const legsContainer = document.getElementById("bet-slip-legs");
-  const parlayStakeWrap = document.getElementById("parlay-stake-wrap");
-  const parlayStakeInput = document.getElementById("parlayStake");
+  const betSlipFooter = document.getElementById("bet-slip-footer");
+  const stakeInput = document.getElementById("stakeInput");
+  const multiplierEl = document.getElementById("bet-slip-multiplier");
+  const payoutLineEl = document.getElementById("bet-slip-payout-line");
   const betModeLabel = document.getElementById("bet-mode-label");
-  const summaryEl = document.getElementById("bet-slip-summary");
   const errorEl = document.getElementById("bet-slip-error");
   const placeBetBtn = document.getElementById("placeBetBtn");
   const betslipCountEl = document.getElementById("betslip-count");
@@ -92,25 +93,16 @@ function init() {
     const picks = getSelectedPicks();
 
     if (picks.length === 0) {
-      summaryEl.textContent = "";
       updateMiniBar();
       return;
     }
 
     const multiplier = parlayMultiplier(picks.length);
-
-    let stake = 0;
-    if (currentMode() === "parlay") {
-      stake = Number(parlayStakeInput.value) || 0;
-    } else {
-      legsContainer.querySelectorAll(".leg-stake").forEach((input) => {
-        stake += Number(input.value) || 0;
-      });
-    }
-
+    const stake = Number(stakeInput.value) || 0;
     const potentialWinnings = Math.round(stake * multiplier * 100) / 100;
-    summaryEl.textContent =
-      `Multiplier: ${multiplier.toFixed(1)}x — Potential winnings: ${potentialWinnings} units`;
+
+    multiplierEl.textContent = `${multiplier.toFixed(1)}x`;
+    payoutLineEl.textContent = `${stake} units pays ${potentialWinnings} units`;
     updateMiniBar();
   }
 
@@ -126,18 +118,6 @@ function init() {
       const label = document.createElement("span");
       label.textContent = `${prop.player} — ${pick} ${prop.line} ${prop.stat}`;
       row.appendChild(label);
-
-      if (mode === "single") {
-        const input = document.createElement("input");
-        input.type = "number";
-        input.min = "1";
-        input.step = "1";
-        input.placeholder = "stake";
-        input.className = "leg-stake";
-        input.dataset.propId = prop.id;
-        input.dataset.pick = pick;
-        row.appendChild(input);
-      }
 
       const removeBtn = document.createElement("button");
       removeBtn.type = "button";
@@ -159,7 +139,7 @@ function init() {
         mode === "parlay" ? `Parlay — ${picks.length} picks` : "Individual bet";
     }
 
-    parlayStakeWrap.hidden = mode !== "parlay";
+    betSlipFooter.hidden = picks.length === 0;
     updateSummary();
   }
 
@@ -172,8 +152,16 @@ function init() {
     renderLegs();
   });
 
-  legsContainer.addEventListener("input", updateSummary);
-  parlayStakeInput?.addEventListener("input", updateSummary);
+  stakeInput?.addEventListener("input", updateSummary);
+
+  document.querySelectorAll(".stake-chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      const add = Number(chip.dataset.add) || 0;
+      const current = Number(stakeInput.value) || 0;
+      stakeInput.value = String(current + add);
+      updateSummary();
+    });
+  });
 
   placeBetBtn?.addEventListener("click", async () => {
     errorEl.textContent = "";
@@ -185,23 +173,19 @@ function init() {
     }
 
     const mode = currentMode();
+    const stake = Number(stakeInput.value);
     let body;
 
     if (mode === "parlay") {
       body = {
         mode: "parlay",
-        stake: Number(parlayStakeInput.value),
+        stake,
         picks: picks.map(({ prop, pick }) => ({ propId: prop.id, pick })),
       };
     } else {
-      const legStakeInputs = legsContainer.querySelectorAll(".leg-stake");
       body = {
         mode: "single",
-        picks: Array.from(legStakeInputs).map((input) => ({
-          propId: input.dataset.propId,
-          pick: input.dataset.pick,
-          stake: Number(input.value),
-        })),
+        picks: picks.map(({ prop, pick }) => ({ propId: prop.id, pick, stake })),
       };
     }
 
