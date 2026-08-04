@@ -203,6 +203,11 @@ function init() {
       deleteAction.type = "button";
       deleteAction.className = "bet-slip-leg-delete-action";
       deleteAction.textContent = "Delete";
+      // Touch-only affordance that duplicates the "×" button and sits
+      // visually behind the row until swiped into view -- keep it out of
+      // the keyboard/screen-reader tab order so it doesn't shadow "×".
+      deleteAction.setAttribute("aria-hidden", "true");
+      deleteAction.tabIndex = -1;
       deleteAction.addEventListener("click", () => {
         deselectPick(prop.id, pick);
         syncOpenButtonVisibility();
