@@ -992,7 +992,11 @@ select {
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  background-color: rgba(255, 255, 255, 0.05);
+  /* Opaque (not the translucent rgba(255,255,255,0.05) this had before the
+     swipe-to-delete panel sat behind it) -- color-mix bakes in the same
+     visual tint against --secondary-bg so it still masks the red Delete
+     panel underneath at rest, instead of letting it bleed through. */
+  background-color: color-mix(in srgb, white 5%, var(--secondary-bg));
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--primary-text);
   border-radius: var(--radius-md);
