@@ -1062,7 +1062,7 @@ select {
 }
 
 .stake-chip:hover {
-  background-color: color-mix(in srgb, var(--highlight-color) 20%, var(--surface-2));
+  background-color: color-mix(in srgb, var(--highlight-color) 16%, var(--surface-2));
 }
 
 #stakeInput {

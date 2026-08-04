@@ -152,7 +152,7 @@ function init() {
     renderLegs();
   });
 
-  stakeInput?.addEventListener("input", updateSummary);
+  stakeInput.addEventListener("input", updateSummary);
 
   document.querySelectorAll(".stake-chip").forEach((chip) => {
     chip.addEventListener("click", () => {
