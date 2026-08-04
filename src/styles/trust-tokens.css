@@ -1,0 +1,18 @@
+/* Trust tokens — ledger/standings surface + rank-medal colors.
+   Values alias the real design system (src/styles/global.css) rather than
+   introducing a new palette — see docs/superpowers/specs/2026-08-03-
+   standings-badges-design.md for why. Fallback values keep this file
+   self-contained if global.css isn't loaded. */
+:root {
+  --trust-canvas: var(--primary-bg, #050506);
+  --trust-surface: var(--secondary-bg, #151417);
+  --trust-surface-raised: var(--surface-2, #1c1b20);
+  --trust-border: rgba(255, 255, 255, 0.08);
+  --trust-ink: var(--primary-text, #f5f5f7);
+  --trust-ink-muted: var(--secondary-text, #98979d);
+  --trust-rank-gold: var(--highlight-color, #d4a72c);
+  --trust-rank-silver: #b0b3be;
+  --trust-rank-bronze: #b88a5c;
+  --trust-positive: var(--success-color, #30d158);
+  --trust-negative: var(--danger-color, #ff453a);
+}

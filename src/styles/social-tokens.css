@@ -1,0 +1,15 @@
+/* Social tokens — streak indicators and badge earned/locked states.
+   Streak colors reuse the existing win/loss semantic colors rather than
+   a new "flame" hue — DESIGN.md reserves purple for live-game state only.
+   See docs/superpowers/specs/2026-08-03-standings-badges-design.md. */
+:root {
+  --social-streak-win: var(--success-color, #30d158);
+  --social-streak-win-bg: rgba(48, 209, 88, 0.14);
+  --social-streak-loss: var(--danger-color, #ff453a);
+  --social-streak-loss-bg: rgba(255, 69, 58, 0.14);
+  --social-badge-earned: var(--highlight-color, #d4a72c);
+  --social-badge-earned-bg: rgba(212, 167, 44, 0.12);
+  --social-badge-locked: var(--secondary-text, #98979d);
+  --social-badge-locked-bg: rgba(255, 255, 255, 0.04);
+  --social-progress-track: rgba(255, 255, 255, 0.1);
+}

@@ -228,10 +228,11 @@ function computeFinalOutcome(
 export async function settleBetsForProp(
   propId: string,
   result: "over" | "under" | "push",
-): Promise<void> {
-  if (!ObjectId.isValid(propId)) return;
+): Promise<string[]> {
+  if (!ObjectId.isValid(propId)) return [];
   const propObjectId = new ObjectId(propId);
   const collection = await getCollection();
+  const settledUserIds = new Set<string>();
 
   const cursor = collection.find({
     "legs.propId": propObjectId,
@@ -266,6 +267,9 @@ export async function settleBetsForProp(
         { $set: { status, payout, settledAt: new Date() } },
       );
       if (payout > 0) await creditUnits(updated.userId.toString(), payout);
+      settledUserIds.add(updated.userId.toString());
     }
   }
+
+  return Array.from(settledUserIds);
 }
