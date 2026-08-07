@@ -10,9 +10,13 @@ if (!Astro.locals.user) {
 }
 
 const user = Astro.locals.user;
+const hasRealPhoto = Boolean(user.avatarUrl) && !isSpriteAvatar(user.avatarUrl);
 const showSpritePicker = !user.avatarUrl || isSpriteAvatar(user.avatarUrl);
 const badges = await getBadgeDisplaysForUser(user.id);
+const error = Astro.url.searchParams.get("error");
 ---
+
+<script src="../scripts/avatarDropzone.js"></script>
 
 <Layout>
   <Nav showCategories={false} />
@@ -25,6 +29,86 @@ const badges = await getBadgeDisplaysForUser(user.id);
       <p class="units-pill">{user.units} units</p>
       <form method="POST" action="/api/auth/logout" data-astro-reload>
         <button type="submit" class="btn-outline">Log Out</button>
+      </form>
+    </div>
+
+    <div class="card badges-card">
+      <p class="sprite-picker-label">Badges</p>
+      <Badges client:load badges={badges} />
+    </div>
+
+    <div class="card photo-upload-card">
+      <p class="sprite-picker-label">{hasRealPhoto ? "Change your photo" : "Upload a photo"}</p>
+      {error === "invalid-avatar-type" && (
+        <p class="auth-error">Profile picture must be a PNG, JPEG, WEBP, or GIF image.</p>
+      )}
+      {error === "avatar-too-large" && <p class="auth-error">Profile picture must be smaller than 5MB.</p>}
+      {error === "avatar-upload-failed" && (
+        <p class="auth-error">We couldn't upload your profile picture right now. Please try again.</p>
+      )}
+      <form method="POST" action="/api/account/avatar" enctype="multipart/form-data" class="auth-form" data-astro-reload>
+        <div class="field">
+          <div class="auth-file-drop" id="avatarDropzone">
+            <div class="auth-file-drop-idle">
+              <span class="auth-file-drop-icon" aria-hidden="true">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M12 15V4M12 4l-3.5 3.5M12 4l3.5 3.5" />
+                  <path d="M4 15v3a2 2 0 002 2h12a2 2 0 002-2v-3" />
+                </svg>
+              </span>
+              <p class="auth-file-drop-text">Drag and drop or</p>
+              <p class="auth-file-drop-hint">PNG, JPEG, WEBP or GIF up to 5MB</p>
+              <button type="button" class="auth-file-drop-btn" id="avatarBrowseBtn">
+                Upload File
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M12 4v12M12 16l-4-4M12 16l4-4" />
+                  <path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" />
+                </svg>
+              </button>
+            </div>
+            <div class="auth-file-drop-preview" id="avatarPreview" hidden>
+              <img class="auth-file-drop-thumb" id="avatarThumb" alt="" />
+              <span class="auth-file-drop-filename" id="avatarFilename"></span>
+              <button type="button" class="auth-file-drop-remove" id="avatarRemoveBtn" aria-label="Remove selected file">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M18 6 6 18M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <input
+              type="file"
+              id="avatar"
+              name="avatar"
+              accept="image/png,image/jpeg,image/webp,image/gif"
+              class="auth-file-drop-input"
+            />
+          </div>
+          <p class="auth-error" id="avatarClientError" hidden></p>
+        </div>
+        <button type="submit">{hasRealPhoto ? "Save New Photo" : "Upload Photo"}</button>
       </form>
     </div>
 
@@ -48,16 +132,38 @@ const badges = await getBadgeDisplaysForUser(user.id);
         </div>
       )
     }
-
-    <div class="card badges-card">
-      <p class="sprite-picker-label">Badges</p>
-      <Badges client:load badges={badges} />
-    </div>
   </main>
 </Layout>
 
 <style>
+  .admin-login {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .admin-login .title {
+    margin-bottom: 0;
+  }
+
+  .account-card .prop-avatar {
+    width: 140px;
+    height: 140px;
+    margin-bottom: var(--space-4);
+  }
+
   .badges-card {
     text-align: left;
+  }
+
+  .photo-upload-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .photo-upload-card .auth-form {
+    width: 100%;
   }
 </style>
