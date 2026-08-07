@@ -32,7 +32,7 @@ const pastBets = bets.filter((bet) => bet.status !== "pending");
   </div>
   <Header />
   <main class="container">
-    <h2 class="title">Live Bets</h2>
+    <h2 class="title live-bets-title"><span class="live-dot" aria-hidden="true"></span>Live Bets</h2>
     <div class="grid">
       {
         liveBets.map((bet) => (
@@ -93,3 +93,36 @@ const pastBets = bets.filter((bet) => bet.status !== "pending");
     />
   </main>
 </Layout>
+
+<style>
+  .title {
+    text-align: left;
+  }
+
+  .live-bets-title {
+    position: relative;
+    letter-spacing: -0.02em;
+    padding-bottom: var(--space-3);
+    background: linear-gradient(135deg, var(--accent-purple), color-mix(in srgb, var(--accent-purple) 40%, white));
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .live-bets-title::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 56px;
+    height: 3px;
+    border-radius: var(--radius-pill);
+    background-color: var(--accent-purple);
+  }
+
+  .live-bets-title .live-dot {
+    background-color: var(--accent-purple);
+    margin-right: var(--space-2);
+  }
+</style>

@@ -122,3 +122,28 @@ const heading = sport ? `${sport} Props` : "Player Props";
     </div>
   </div>
 </div>
+
+<style>
+  .title {
+    position: relative;
+    text-align: left;
+    letter-spacing: -0.02em;
+    padding-bottom: var(--space-3);
+    background: linear-gradient(135deg, var(--highlight-color), color-mix(in srgb, var(--highlight-color) 40%, white));
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .title::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 56px;
+    height: 3px;
+    border-radius: var(--radius-pill);
+    background-color: var(--highlight-color);
+  }
+</style>
