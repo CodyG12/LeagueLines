@@ -36,6 +36,29 @@ export interface StandingsBoardProps {
 
 const RANK_COLORS = ["var(--trust-rank-gold)", "var(--trust-rank-silver)", "var(--trust-rank-bronze)"];
 
+// Riser height (px) under each podium block — the actual "1st highest, 2nd
+// next, 3rd lowest" effect. Indexed by rank (0 = 1st).
+const PODIUM_RISER_HEIGHT = [96, 64, 48];
+
+function Crown() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width={20}
+      height={20}
+      fill="none"
+      stroke="var(--trust-rank-gold)"
+      strokeWidth={1.6}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M5 18L6.5 10L9 14L12 7L15 14L17.5 10L19 18" />
+      <path d="M5 18h14" />
+    </svg>
+  );
+}
+
 function RankBadge({ rank }: { rank: number }) {
   const color = RANK_COLORS[rank] ?? "var(--trust-ink-muted)";
   const isMedal = rank < 3;
@@ -63,7 +86,7 @@ function RankBadge({ rank }: { rank: number }) {
   );
 }
 
-function Avatar({ src, name }: { src: string | null; name: string }) {
+function Avatar({ src, name, size = 32 }: { src: string | null; name: string; size?: number }) {
   const initial = name.trim().charAt(0).toUpperCase() || "?";
   if (src) {
     return (
@@ -71,8 +94,8 @@ function Avatar({ src, name }: { src: string | null; name: string }) {
         src={src}
         alt=""
         style={{
-          width: 32,
-          height: 32,
+          width: size,
+          height: size,
           borderRadius: "50%",
           objectFit: "cover",
           flexShrink: 0,
@@ -87,15 +110,15 @@ function Avatar({ src, name }: { src: string | null; name: string }) {
         display: "inline-flex",
         alignItems: "center",
         justifyContent: "center",
-        width: 32,
-        height: 32,
+        width: size,
+        height: size,
         borderRadius: "50%",
         flexShrink: 0,
         backgroundColor: "var(--trust-surface-raised)",
         color: "var(--trust-ink-muted)",
         fontFamily: "var(--font-display)",
         fontWeight: 700,
-        fontSize: "0.85rem",
+        fontSize: size >= 56 ? "1.5rem" : "0.85rem",
       }}
     >
       {initial}
@@ -172,6 +195,89 @@ function PeriodToggle({ period, onPeriodChange }: { period: Period; onPeriodChan
   );
 }
 
+function PodiumBlock({ row, rank }: { row: StandingRow; rank: 0 | 1 | 2 }) {
+  const isFirst = rank === 0;
+  const color = RANK_COLORS[rank];
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, flex: "1 1 0", minWidth: 0 }}>
+      {isFirst && <Crown />}
+      <Avatar src={row.avatarUrl} name={row.displayName} size={isFirst ? 72 : 56} />
+      <span
+        style={{
+          fontFamily: "var(--font-display)",
+          fontWeight: 700,
+          fontSize: isFirst ? "1rem" : "0.85rem",
+          color: "var(--trust-ink)",
+          textAlign: "center",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          maxWidth: "100%",
+        }}
+      >
+        {row.displayName}
+      </span>
+      <span
+        style={{
+          fontFamily: "var(--font-num)",
+          fontVariantNumeric: "tabular-nums",
+          fontWeight: 800,
+          fontSize: "0.85rem",
+          color: row.netUnits >= 0 ? "var(--trust-positive)" : "var(--trust-negative)",
+        }}
+      >
+        {row.netUnits >= 0 ? "+" : ""}
+        {row.netUnits.toFixed(1)}
+      </span>
+      <div
+        style={{
+          width: "100%",
+          height: PODIUM_RISER_HEIGHT[rank],
+          borderRadius: "12px 12px 0 0",
+          backgroundColor: color,
+          display: "flex",
+          justifyContent: "center",
+          paddingTop: 8,
+        }}
+      >
+        <span
+          style={{
+            fontFamily: "var(--font-num)",
+            fontVariantNumeric: "tabular-nums",
+            fontWeight: 800,
+            fontSize: "1.5rem",
+            color: "var(--trust-canvas)",
+          }}
+        >
+          {rank + 1}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function Podium({ top3 }: { top3: [StandingRow, StandingRow, StandingRow] }) {
+  const [first, second, third] = top3;
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "flex-end",
+        gap: 12,
+        padding: "24px 16px 0",
+        borderRadius: 16,
+        backgroundColor: "var(--trust-surface)",
+        border: "1px solid var(--trust-border)",
+      }}
+    >
+      <PodiumBlock row={second} rank={1} />
+      <PodiumBlock row={first} rank={0} />
+      <PodiumBlock row={third} rank={2} />
+    </div>
+  );
+}
+
 function CalloutCard({
   title,
   emoji,
@@ -242,6 +348,10 @@ function CalloutCard({
 }
 
 export function StandingsBoard({ period, onPeriodChange, standings, upset, worstBeat }: StandingsBoardProps) {
+  const top3: [StandingRow, StandingRow, StandingRow] | null =
+    standings.length >= 3 ? [standings[0], standings[1], standings[2]] : null;
+  const listRows = top3 ? standings.slice(3) : standings;
+
   return (
     <div
       style={{
@@ -267,33 +377,36 @@ export function StandingsBoard({ period, onPeriodChange, standings, upset, worst
         <PeriodToggle period={period} onPeriodChange={onPeriodChange} />
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          borderRadius: 16,
-          overflow: "hidden",
-          border: "1px solid var(--trust-border)",
-        }}
-      >
-        {standings.length === 0 && (
-          <div style={{ padding: 24, textAlign: "center", color: "var(--trust-ink-muted)" }}>
-            No settled bets yet {period === "week" ? "this week" : "this season"}.
-          </div>
-        )}
-        {standings.map((row, index) => (
-          <div
-            key={row.userId}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-              padding: "12px 16px",
-              backgroundColor: index % 2 === 0 ? "var(--trust-surface)" : "var(--trust-surface-raised)",
-            }}
-          >
-            <RankBadge rank={index} />
-            <Avatar src={row.avatarUrl} name={row.displayName} />
+      {top3 && <Podium top3={top3} />}
+
+      {(!top3 || listRows.length > 0) && (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            borderRadius: 16,
+            overflow: "hidden",
+            border: "1px solid var(--trust-border)",
+          }}
+        >
+          {listRows.length === 0 && (
+            <div style={{ padding: 24, textAlign: "center", color: "var(--trust-ink-muted)" }}>
+              No settled bets yet {period === "week" ? "this week" : "this season"}.
+            </div>
+          )}
+          {listRows.map((row, index) => (
+            <div
+              key={row.userId}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                padding: "12px 16px",
+                backgroundColor: index % 2 === 0 ? "var(--trust-surface)" : "var(--trust-surface-raised)",
+              }}
+            >
+              <RankBadge rank={top3 ? index + 3 : index} />
+              <Avatar src={row.avatarUrl} name={row.displayName} />
             <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0 }}>
               <span
                 style={{
@@ -335,6 +448,7 @@ export function StandingsBoard({ period, onPeriodChange, standings, upset, worst
           </div>
         ))}
       </div>
+      )}
 
       <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
         <CalloutCard title="Biggest Upset" emoji="🔥" card={upset} emptyText="No upsets yet — chalk city." />
