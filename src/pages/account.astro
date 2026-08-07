@@ -11,7 +11,6 @@ if (!Astro.locals.user) {
 
 const user = Astro.locals.user;
 const hasRealPhoto = Boolean(user.avatarUrl) && !isSpriteAvatar(user.avatarUrl);
-const showSpritePicker = !user.avatarUrl || isSpriteAvatar(user.avatarUrl);
 const badges = await getBadgeDisplaysForUser(user.id);
 const error = Astro.url.searchParams.get("error");
 ---
@@ -112,26 +111,22 @@ const error = Astro.url.searchParams.get("error");
       </form>
     </div>
 
-    {
-      showSpritePicker && (
-        <div class="card sprite-picker-card">
-          <p class="sprite-picker-label">Choose an avatar</p>
-          <form method="POST" action="/api/account/avatar" class="sprite-picker-grid" data-astro-reload>
-            {SPRITE_AVATARS.map((sprite) => (
-              <button
-                type="submit"
-                name="avatarSprite"
-                value={sprite}
-                class={sprite === user.avatarUrl ? "sprite-option selected" : "sprite-option"}
-                aria-label="Use this avatar"
-              >
-                <img src={sprite} alt="" loading="lazy" />
-              </button>
-            ))}
-          </form>
-        </div>
-      )
-    }
+    <div class="card sprite-picker-card">
+      <p class="sprite-picker-label">Choose an avatar</p>
+      <form method="POST" action="/api/account/avatar" class="sprite-picker-grid" data-astro-reload>
+        {SPRITE_AVATARS.map((sprite) => (
+          <button
+            type="submit"
+            name="avatarSprite"
+            value={sprite}
+            class={sprite === user.avatarUrl ? "sprite-option selected" : "sprite-option"}
+            aria-label="Use this avatar"
+          >
+            <img src={sprite} alt="" loading="lazy" />
+          </button>
+        ))}
+      </form>
+    </div>
   </main>
 </Layout>
 
@@ -154,6 +149,11 @@ const error = Astro.url.searchParams.get("error");
 
   .badges-card {
     text-align: left;
+  }
+
+  .badges-card .sprite-picker-label {
+    text-align: center;
+    margin-bottom: var(--space-3);
   }
 
   .photo-upload-card {
