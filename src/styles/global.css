@@ -2027,3 +2027,111 @@ body.has-bottom-nav:has(.open-modal.visible) {
   font-size: 0.95rem;
   font-weight: 600;
 }
+
+/* PWA install nudges — Android/desktop's custom beforeinstallprompt banner
+   (src/components/sub_components/InstallPromptBanner.astro) and iOS
+   Safari's "Add to Home Screen" instructional banner
+   (src/components/sub_components/IosInstallBanner.astro). Shared classes
+   (not scoped per-component) since both use the same fixed bottom-sheet
+   treatment. */
+.pwa-banner {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--bottom-nav-height, 0px) + var(--space-4));
+  transform: translateX(-50%) translateY(120%);
+  z-index: 180;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: min(420px, 92vw);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: var(--shadow-elevated);
+  transition: transform 0.35s var(--ease-spring);
+}
+
+/* [hidden] is equal specificity to the plain class above, and author
+   styles beat the UA stylesheet's default `[hidden] { display: none }`
+   regardless of source order (same issue documented on
+   .auth-file-drop-idle[hidden] / .auth-loading-overlay[hidden] above) —
+   reassert it explicitly. */
+.pwa-banner[hidden] {
+  display: none;
+}
+
+.pwa-banner:not([hidden]) {
+  transform: translateX(-50%) translateY(0);
+}
+
+.pwa-banner-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--highlight-color);
+}
+
+.pwa-banner-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.pwa-banner-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.pwa-banner-text strong {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: var(--primary-text);
+}
+
+.pwa-banner-text span {
+  font-size: 0.8rem;
+  color: var(--secondary-text);
+}
+
+.pwa-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.pwa-banner-install-btn {
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.85rem;
+}
+
+.pwa-banner-dismiss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--secondary-text);
+  flex-shrink: 0;
+}
+
+.pwa-banner-dismiss:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.pwa-banner-dismiss svg {
+  width: 16px;
+  height: 16px;
+}

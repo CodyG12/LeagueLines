@@ -1,6 +1,8 @@
 ---
 import { ClientRouter } from "astro:transitions";
 import BottomNav from "../components/sub_components/BottomNav.astro";
+import InstallPromptBanner from "../components/sub_components/InstallPromptBanner.astro";
+import IosInstallBanner from "../components/sub_components/IosInstallBanner.astro";
 import "../styles/global.css";
 import "../styles/trust-tokens.css";
 import "../styles/social-tokens.css";
@@ -35,6 +37,11 @@ const isAdminRoute = Astro.url.pathname.startsWith("/admin");
       href={isAdminRoute ? "/apple-touch-icon-admin.png" : "/apple-touch-icon.png"}
     />
     <link rel="shortcut icon" href={isAdminRoute ? "/favicon-admin.ico" : "/favicon.ico"} />
+    {!isAdminRoute && <link rel="manifest" href="/manifest.webmanifest" />}
+    <meta name="theme-color" content="#050506" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="LeagueLines" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -52,6 +59,9 @@ const isAdminRoute = Astro.url.pathname.startsWith("/admin");
   <body data-logged-in={Astro.locals.user ? "true" : "false"} class={isAdminRoute ? "" : "has-bottom-nav"}>
     <slot />
     {!isAdminRoute && <BottomNav />}
+    {!isAdminRoute && <InstallPromptBanner />}
+    {!isAdminRoute && <IosInstallBanner />}
+    {!isAdminRoute && <script src="../scripts/registerSW.ts"></script>}
   </body>
 </html>
 
