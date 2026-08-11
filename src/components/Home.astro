@@ -11,6 +11,14 @@ interface Props {
 const { sport } = Astro.props as Props;
 const playerProps = sport ? await listPublicPropsBySport(sport) : await listPublicProps();
 const heading = sport ? `${sport} Props` : "Player Props";
+
+// Props for a registered user are stored with their "(@handle)" baked into
+// the player name (see the admin form's submit handler in
+// src/scripts/adminProps.js, which sends the select option's full display
+// text) — strip it here so the card shows just the first/last name.
+function displayName(player: string): string {
+  return player.replace(/\s*\(@[^)]+\)\s*$/, "");
+}
 ---
 
 <script src="../scripts/modal.js"></script>
@@ -73,7 +81,7 @@ const heading = sport ? `${sport} Props` : "Player Props";
               </div>
               <div class="pc-content">
                 <div class="pc-details">
-                  <h3>{prop.player}</h3>
+                  <h3>{displayName(prop.player)}</h3>
                   <p>{prop.line} {prop.stat}</p>
                   {prop.team && <span class="pc-team">{prop.team}</span>}
                   <span class="pc-time">{prop.displayTime}</span>
