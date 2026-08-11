@@ -198,17 +198,6 @@ select {
   color: var(--primary-text);
 }
 
-#stakeInput {
-  -moz-appearance: textfield;
-  appearance: textfield;
-}
-
-#stakeInput::-webkit-outer-spin-button,
-#stakeInput::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
 .bet-options {
   display: flex;
   gap: var(--space-1);

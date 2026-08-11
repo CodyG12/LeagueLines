@@ -111,7 +111,7 @@ const heading = sport ? `${sport} Props` : "Player Props";
           <button type="button" class="stake-chip" data-add="5">+5</button>
           <button type="button" class="stake-chip" data-add="10">+10</button>
           <button type="button" class="stake-chip" data-add="25">+25</button>
-          <input type="number" id="stakeInput" min="1" step="1" placeholder="units" />
+          <input type="text" inputmode="numeric" pattern="[0-9]*" id="stakeInput" placeholder="units" />
         </div>
       </div>
 
