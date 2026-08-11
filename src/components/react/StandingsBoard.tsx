@@ -1,3 +1,6 @@
+import fireIconSource from "../../assets/fire.svg?raw";
+import heartBrokenIconSource from "../../assets/heart_broken.svg?raw";
+
 export type Period = "week" | "season";
 
 export interface StandingRow {
@@ -39,6 +42,27 @@ const RANK_COLORS = ["var(--trust-rank-gold)", "var(--trust-rank-silver)", "var(
 // Riser height (px) under each podium block — the actual "1st highest, 2nd
 // next, 3rd lowest" effect. Indexed by rank (0 = 1st).
 const PODIUM_RISER_HEIGHT = [96, 64, 48];
+
+// fire.svg/heart_broken.svg are Material Symbols icons: a single filled
+// path on a "0 -960 960 960" viewBox. Extracted once and rendered directly
+// as a small self-contained <svg> (no shared wrapper to re-project into,
+// unlike the icons in src/lib/sportIcons.ts) with fill: currentColor so
+// each one matches its label's muted ink color rather than an emoji's own
+// fixed color.
+function extractIconPath(source: string): string {
+  return source.match(/\sd="([^"]+)"/)?.[1] ?? "";
+}
+
+const FIRE_ICON_PATH = extractIconPath(fireIconSource);
+const HEART_BROKEN_ICON_PATH = extractIconPath(heartBrokenIconSource);
+
+function CalloutIcon({ path }: { path: string }) {
+  return (
+    <svg viewBox="0 -960 960 960" width={14} height={14} fill="currentColor" aria-hidden="true">
+      <path d={path} />
+    </svg>
+  );
+}
 
 function Crown() {
   return (
@@ -280,12 +304,12 @@ function Podium({ top3 }: { top3: [StandingRow, StandingRow, StandingRow] }) {
 
 function CalloutCard({
   title,
-  emoji,
+  iconPath,
   card,
   emptyText,
 }: {
   title: string;
-  emoji: string;
+  iconPath: string;
   card: UpsetCard | WorstBeatCard | null;
   emptyText: string;
 }) {
@@ -304,6 +328,9 @@ function CalloutCard({
     >
       <span
         style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 6,
           fontFamily: "var(--font-body)",
           fontWeight: 700,
           fontSize: "0.75rem",
@@ -312,7 +339,7 @@ function CalloutCard({
           color: "var(--trust-ink-muted)",
         }}
       >
-        {emoji} {title}
+        <CalloutIcon path={iconPath} /> {title}
       </span>
       {card ? (
         <>
@@ -451,8 +478,13 @@ export function StandingsBoard({ period, onPeriodChange, standings, upset, worst
       )}
 
       <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-        <CalloutCard title="Biggest Upset" emoji="🔥" card={upset} emptyText="No upsets yet — chalk city." />
-        <CalloutCard title="Worst Beat" emoji="💔" card={worstBeat} emptyText="No bad beats yet — lucky group." />
+        <CalloutCard title="Biggest Upset" iconPath={FIRE_ICON_PATH} card={upset} emptyText="No upsets yet — chalk city." />
+        <CalloutCard
+          title="Worst Beat"
+          iconPath={HEART_BROKEN_ICON_PATH}
+          card={worstBeat}
+          emptyText="No bad beats yet — lucky group."
+        />
       </div>
     </div>
   );
