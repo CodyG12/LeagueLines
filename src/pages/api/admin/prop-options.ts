@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { addOption, type OptionType } from "../../../lib/propOptions";
+import { addOption, deleteOption, type OptionType } from "../../../lib/propOptions";
 
 const VALID_TYPES: OptionType[] = ["sport", "player", "stat"];
 
@@ -10,20 +10,46 @@ function jsonResponse(body: unknown, status: number): Response {
   });
 }
 
-export const POST: APIRoute = async ({ request }) => {
-  const body = await request.json().catch(() => null);
-  if (typeof body !== "object" || body === null) {
-    return jsonResponse({ error: "Request body must be an object" }, 400);
-  }
+function parseOptionInput(
+  body: unknown,
+  sportRequiredMessage: string,
+): { type: OptionType; value: string; sport: string | null } | string {
+  if (typeof body !== "object" || body === null) return "Request body must be an object";
 
-  const { type, value } = body as Record<string, unknown>;
+  const { type, value, sport } = body as Record<string, unknown>;
   if (typeof type !== "string" || !VALID_TYPES.includes(type as OptionType)) {
-    return jsonResponse({ error: "type must be one of sport, player, stat" }, 400);
+    return "type must be one of sport, player, stat";
   }
   if (typeof value !== "string" || value.trim() === "") {
-    return jsonResponse({ error: "value must be a non-empty string" }, 400);
+    return "value must be a non-empty string";
   }
 
-  await addOption(type as OptionType, value.trim());
+  let sportValue: string | null = null;
+  if (type === "stat") {
+    if (typeof sport !== "string" || sport.trim() === "") {
+      return sportRequiredMessage;
+    }
+    sportValue = sport.trim();
+  }
+
+  return { type: type as OptionType, value: value.trim(), sport: sportValue };
+}
+
+export const POST: APIRoute = async ({ request }) => {
+  const body = await request.json().catch(() => null);
+  const parsed = parseOptionInput(body, "sport is required when adding a stat");
+  if (typeof parsed === "string") return jsonResponse({ error: parsed }, 400);
+
+  await addOption(parsed.type, parsed.value, parsed.sport);
   return jsonResponse({ success: true }, 201);
+};
+
+export const DELETE: APIRoute = async ({ request }) => {
+  const body = await request.json().catch(() => null);
+  const parsed = parseOptionInput(body, "sport is required when deleting a stat");
+  if (typeof parsed === "string") return jsonResponse({ error: parsed }, 400);
+
+  const deleted = await deleteOption(parsed.type, parsed.value, parsed.sport);
+  if (!deleted) return jsonResponse({ error: "Option not found" }, 404);
+  return jsonResponse({ success: true }, 200);
 };

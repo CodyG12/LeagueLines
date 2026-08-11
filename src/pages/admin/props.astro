@@ -1,16 +1,13 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { listAllProps } from "../../lib/props";
-import { listOptionSets } from "../../lib/propOptions";
+import { listOptionSets, listStatOptionsBySport } from "../../lib/propOptions";
 import { listAllUsers } from "../../lib/users";
 import { sportIcon } from "../../lib/sportIcons";
 
 const props = await listAllProps();
-const {
-  sport: sportOptions,
-  player: playerOptions,
-  stat: statOptions,
-} = await listOptionSets();
+const { sport: sportOptions, player: playerOptions } = await listOptionSets();
+const statOptionsBySport = await listStatOptionsBySport();
 const users = await listAllUsers();
 ---
 
@@ -37,7 +34,10 @@ const users = await listAllUsers();
       <input type="hidden" id="prop-id" value="" />
 
       <div class="field">
-        <label for="player">Player</label>
+        <div class="field-label-row">
+          <label for="player">Player</label>
+          <button type="button" class="manage-options-btn" data-option-type="player">Manage</button>
+        </div>
         <select id="player" name="player" required>
           <option value="" disabled selected>Select player...</option>
           <optgroup label="Registered Users">
@@ -59,7 +59,10 @@ const users = await listAllUsers();
           <option value="__add_new__">+ Add New...</option>
         </select>
       </div><div class="field">
-        <label for="sport">Sport</label>
+        <div class="field-label-row">
+          <label for="sport">Sport</label>
+          <button type="button" class="manage-options-btn" data-option-type="sport">Manage</button>
+        </div>
         <select id="sport" name="sport" required>
           <option value="" disabled selected>Select sport...</option>
           {
@@ -77,14 +80,12 @@ const users = await listAllUsers();
           <input type="text" id="team" name="team" />
         </div>
         <div class="field">
-          <label for="stat">Stat</label>
-          <select id="stat" name="stat" required>
-            <option value="" disabled selected>Select stat...</option>
-            {
-              statOptions.map((option) => (
-                <option value={option}>{option}</option>
-              ))
-            }
+          <div class="field-label-row">
+            <label for="stat">Stat</label>
+            <button type="button" class="manage-options-btn" data-option-type="stat">Manage</button>
+          </div>
+          <select id="stat" name="stat" required data-stat-options={JSON.stringify(statOptionsBySport)}>
+            <option value="" disabled selected>Select a sport first...</option>
             <option value="__add_new__">+ Add New...</option>
           </select>
         </div>
@@ -114,6 +115,14 @@ const users = await listAllUsers();
         <button type="submit" id="prop-form-submit">Create Prop</button>
       </div>
     </form>
+
+    <div class="modal" id="manage-options-modal">
+      <div class="modal-inner">
+        <h2 id="manage-options-title">Manage Options</h2>
+        <div id="manage-options-list"></div>
+        <button type="button" id="manage-options-close" class="secondary-btn">Close</button>
+      </div>
+    </div>
 
     <div class="prop-grid">
       {
@@ -198,3 +207,61 @@ const users = await listAllUsers();
     </div>
   </main>
 </Layout>
+
+<style>
+  .field-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .manage-options-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--secondary-text);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .manage-options-btn:hover {
+    color: var(--primary-text);
+    background: none;
+    transform: none;
+  }
+
+  #manage-options-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    max-height: 50vh;
+    overflow-y: auto;
+    margin: var(--space-4) 0;
+    text-align: left;
+  }
+
+  .manage-option-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+
+  .manage-option-row .delete-btn {
+    padding: var(--space-1) var(--space-3);
+    font-size: 0.8rem;
+    flex-shrink: 0;
+  }
+
+  .manage-options-empty {
+    color: var(--secondary-text);
+    font-size: 0.9rem;
+    margin: var(--space-4) 0;
+  }
+</style>
