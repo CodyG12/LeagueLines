@@ -273,3 +273,25 @@ export async function settleBetsForProp(
 
   return Array.from(settledUserIds);
 }
+
+// Called when an admin deletes a prop outright (not graded — see
+// settleBetsForProp for that path). Any bet still pending on this prop can
+// no longer be resolved, so it's voided entirely: the staked units are
+// refunded and the bet doc is removed, which also drops it off the user's
+// My Bets page. Already-settled bets referencing this prop are untouched.
+export async function voidBetsForProp(propId: string): Promise<string[]> {
+  if (!ObjectId.isValid(propId)) return [];
+  const propObjectId = new ObjectId(propId);
+  const collection = await getCollection();
+  const affectedUserIds = new Set<string>();
+
+  const cursor = collection.find({ "legs.propId": propObjectId, status: "pending" });
+  for await (const bet of cursor) {
+    await creditUnits(bet.userId.toString(), bet.stake);
+    affectedUserIds.add(bet.userId.toString());
+  }
+
+  await collection.deleteMany({ "legs.propId": propObjectId, status: "pending" });
+
+  return Array.from(affectedUserIds);
+}

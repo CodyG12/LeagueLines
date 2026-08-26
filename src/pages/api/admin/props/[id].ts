@@ -7,7 +7,7 @@ import {
   type PropResult,
   type UpdatePropInput,
 } from "../../../../lib/props";
-import { settleBetsForProp } from "../../../../lib/bets";
+import { settleBetsForProp, voidBetsForProp } from "../../../../lib/bets";
 import { getUserById } from "../../../../lib/users";
 import { checkAndAwardBadges } from "../../../../lib/badges";
 
@@ -107,6 +107,7 @@ export const PATCH: APIRoute = async ({ params, request }) => {
 };
 
 export const DELETE: APIRoute = async ({ params }) => {
+  await voidBetsForProp(params.id!);
   const success = await deleteProp(params.id!);
   if (!success) return jsonResponse({ error: "Not found" }, 404);
   return jsonResponse({ success: true }, 200);
