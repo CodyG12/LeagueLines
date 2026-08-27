@@ -673,6 +673,7 @@ select {
   .close-form input,
   .close-form button {
     width: 100%;
+    flex-basis: auto;
     padding: var(--space-2) var(--space-3);
     font-size: 0.8rem;
   }
