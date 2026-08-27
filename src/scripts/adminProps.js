@@ -403,13 +403,17 @@ document.querySelectorAll(".admin-prop").forEach((card) => {
   const closeForm = card.querySelector(".close-form");
   closeForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const result = new FormData(closeForm).get("result");
+    const formData = new FormData(closeForm);
+    const result = formData.get("result");
     if (!result) return;
+
+    const finalValueRaw = formData.get("finalValue");
+    const finalValue = finalValueRaw && finalValueRaw.trim() !== "" ? Number(finalValueRaw) : null;
 
     const response = await fetch(`/api/admin/props/${prop.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: "closed", result }),
+      body: JSON.stringify({ status: "closed", result, finalValue }),
     });
 
     if (response.ok) {
