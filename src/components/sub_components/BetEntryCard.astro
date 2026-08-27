@@ -28,6 +28,22 @@ function legResultGlyph(legResult: LegResult): string {
   if (legResult === "push") return "=";
   return "";
 }
+
+// The graded direction (did the actual value land over or under the line)
+// isn't stored directly — it's derivable from what was picked plus whether
+// that pick won: e.g. picked over + won = landed over; picked over + lost =
+// landed under. A push has no direction. Used to make the bar visually
+// read as "stopped short" for an under result instead of always filling
+// the same way regardless of which side of the line it landed on.
+function legActualDirection(pick: "over" | "under", legResult: LegResult): "over" | "under" | "push" {
+  if (legResult === "push") return "push";
+  const landedOver = (pick === "over") === (legResult === "win");
+  return landedOver ? "over" : "under";
+}
+
+function progressFillWidth(pick: "over" | "under", legResult: LegResult): number {
+  return legActualDirection(pick, legResult) === "under" ? 30 : 100;
+}
 ---
 
 <div class="bet-entry-card">
@@ -89,7 +105,10 @@ function legResultGlyph(legResult: LegResult): string {
           <div class="bet-leg-progress-row">
             <div class="bet-leg-progress-track">
               {leg.legResult !== "pending" && (
-                <div class={`bet-leg-progress-fill bet-leg-progress-fill--${legResultModifier(leg.legResult)}`} />
+                <div
+                  class={`bet-leg-progress-fill bet-leg-progress-fill--${legResultModifier(leg.legResult)}`}
+                  style={`width: ${progressFillWidth(leg.pick, leg.legResult)}%`}
+                />
               )}
             </div>
             {leg.legResult !== "pending" && (
