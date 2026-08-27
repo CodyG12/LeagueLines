@@ -1,7 +1,8 @@
 import { ObjectId, type Collection } from "mongodb";
 import clientPromise from "./mongodb";
 import { getPropById } from "./props";
-import { creditUnits, debitUnits } from "./users";
+import { creditUnits, debitUnits, getCollection as getUsersCollection } from "./users";
+import { pickSpriteFor } from "./sprites";
 
 export type BetMode = "single" | "parlay";
 export type BetStatus = "pending" | "won" | "lost" | "pushed";
@@ -22,10 +23,13 @@ export interface BetLeg {
   propId: ObjectId;
   sport: string;
   player: string;
+  playerUserId: ObjectId | null;
+  team: string | null;
   stat: string;
   line: number;
   pick: "over" | "under";
   legResult: LegResult;
+  finalValue: number | null;
 }
 
 export interface BetDoc {
@@ -46,10 +50,14 @@ export interface PublicBetLeg {
   propId: string;
   sport: string;
   player: string;
+  playerUserId: string | null;
+  playerAvatarUrl: string | null;
+  team: string | null;
   stat: string;
   line: number;
   pick: "over" | "under";
   legResult: LegResult;
+  finalValue: number | null;
 }
 
 export interface PublicBet {
@@ -83,10 +91,14 @@ export function toPublicBet(doc: BetDoc): PublicBet {
       propId: leg.propId.toString(),
       sport: leg.sport,
       player: leg.player,
+      playerUserId: leg.playerUserId ? leg.playerUserId.toString() : null,
+      playerAvatarUrl: null,
+      team: leg.team ?? null,
       stat: leg.stat,
       line: leg.line,
       pick: leg.pick,
       legResult: leg.legResult,
+      finalValue: leg.finalValue ?? null,
     })),
     stake: doc.stake,
     potentialPayout: doc.potentialPayout,
@@ -95,6 +107,31 @@ export function toPublicBet(doc: BetDoc): PublicBet {
     createdAt: doc.createdAt.toISOString(),
     settledAt: doc.settledAt ? doc.settledAt.toISOString() : null,
   };
+}
+
+async function attachLegAvatars(bets: PublicBet[]): Promise<PublicBet[]> {
+  const ids = Array.from(
+    new Set(
+      bets.flatMap((b) => b.legs.map((leg) => leg.playerUserId)).filter((id): id is string => id !== null),
+    ),
+  );
+
+  let avatarById = new Map<string, string | null>();
+  if (ids.length > 0) {
+    const usersCollection = await getUsersCollection();
+    const users = await usersCollection
+      .find({ _id: { $in: ids.map((id) => new ObjectId(id)) } }, { projection: { avatarUrl: 1 } })
+      .toArray();
+    avatarById = new Map(users.map((u) => [u._id.toString(), u.avatarUrl ?? null]));
+  }
+
+  return bets.map((b) => ({
+    ...b,
+    legs: b.legs.map((leg) => {
+      const resolved = leg.playerUserId ? (avatarById.get(leg.playerUserId) ?? null) : null;
+      return { ...leg, playerAvatarUrl: resolved ?? pickSpriteFor(leg.propId) };
+    }),
+  }));
 }
 
 export async function placeBets(
@@ -136,10 +173,13 @@ export async function placeBets(
       propId: new ObjectId(prop.id),
       sport: prop.sport,
       player: prop.player,
+      playerUserId: prop.playerUserId ? new ObjectId(prop.playerUserId) : null,
+      team: prop.team,
       stat: prop.stat,
       line: prop.line,
       pick: pick.pick,
       legResult: "pending",
+      finalValue: null,
     });
   }
 
@@ -201,7 +241,7 @@ export async function listBetsForUser(userId: string): Promise<PublicBet[]> {
     .find({ userId: new ObjectId(userId) })
     .sort({ createdAt: -1 })
     .toArray();
-  return docs.map(toPublicBet);
+  return attachLegAvatars(docs.map(toPublicBet));
 }
 
 export async function countPendingBetsForUser(userId: string): Promise<number> {
@@ -228,6 +268,7 @@ function computeFinalOutcome(
 export async function settleBetsForProp(
   propId: string,
   result: "over" | "under" | "push",
+  finalValue: number | null = null,
 ): Promise<string[]> {
   if (!ObjectId.isValid(propId)) return [];
   const propObjectId = new ObjectId(propId);
@@ -250,7 +291,7 @@ export async function settleBetsForProp(
     const updated = await collection.findOneAndUpdate(
       { _id: bet._id, "legs.propId": propObjectId, "legs.legResult": "pending" },
       {
-        $set: { "legs.$[leg].legResult": legResult },
+        $set: { "legs.$[leg].legResult": legResult, "legs.$[leg].finalValue": finalValue },
         $inc: { pendingLegCount: -1 },
       },
       {

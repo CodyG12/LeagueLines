@@ -1,0 +1,107 @@
+---
+import type { PublicBet, LegResult } from "../../lib/bets";
+
+interface Props {
+  bet: PublicBet;
+}
+
+const { bet } = Astro.props;
+
+const multiplier = bet.potentialPayout / bet.stake;
+const modeLabel = bet.legs.length === 1 ? "Single Bet" : `${bet.legs.length}-Leg Parlay`;
+
+function formatPlacedDate(iso: string): string {
+  const date = new Date(iso);
+  return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+}
+
+function legResultModifier(legResult: LegResult): "pending" | "win" | "loss" | "push" {
+  if (legResult === "win") return "win";
+  if (legResult === "loss") return "loss";
+  if (legResult === "push") return "push";
+  return "pending";
+}
+
+function legResultGlyph(legResult: LegResult): string {
+  if (legResult === "win") return "✓";
+  if (legResult === "loss") return "✕";
+  if (legResult === "push") return "=";
+  return "";
+}
+---
+
+<div class="bet-entry-card">
+  <div class="bet-entry-header">
+    <div class="bet-entry-header-left">
+      <span class="bet-entry-mode">{modeLabel}</span>
+      <span class="bet-entry-stake">
+        {bet.stake} units @ {multiplier.toFixed(1)}x
+      </span>
+    </div>
+    <div class="bet-entry-header-right">
+      {
+        bet.status === "pending" && (
+          <span class="bet-entry-outcome bet-entry-outcome--pending">
+            Potential +<span data-animate-number={bet.potentialPayout - bet.stake}>0</span> units
+          </span>
+        )
+      }
+      {
+        bet.status === "won" && (
+          <span class="bet-entry-outcome bet-entry-outcome--won">
+            +<span data-animate-number={(bet.payout ?? 0) - bet.stake}>0</span> units
+          </span>
+        )
+      }
+      {
+        bet.status === "lost" && (
+          <span class="bet-entry-outcome bet-entry-outcome--lost">
+            -<span data-animate-number={bet.stake}>0</span> units
+          </span>
+        )
+      }
+      {
+        bet.status === "pushed" && (
+          <span class="bet-entry-outcome bet-entry-outcome--pushed">Push · stake returned</span>
+        )
+      }
+    </div>
+  </div>
+
+  <div class="bet-entry-legs">
+    {
+      bet.legs.map((leg) => (
+        <div class="bet-leg">
+          <img class="bet-leg-avatar" src={leg.playerAvatarUrl} alt="" loading="lazy" />
+          <div class="bet-leg-info">
+            <span class="bet-leg-name">{leg.player}</span>
+            <span class="bet-leg-subtitle">
+              {leg.sport}
+              {leg.team ? ` • ${leg.team}` : ""}
+            </span>
+          </div>
+          <div class={`bet-leg-pick bet-leg-pick--${legResultModifier(leg.legResult)}`}>
+            <span class="bet-leg-pick-value">
+              {leg.pick === "over" ? "Over" : "Under"} {leg.line}
+            </span>
+            <span class="bet-leg-pick-stat">{leg.stat}</span>
+          </div>
+          <div class="bet-leg-progress-row">
+            <div class="bet-leg-progress-track">
+              {leg.legResult !== "pending" && (
+                <div class={`bet-leg-progress-fill bet-leg-progress-fill--${legResultModifier(leg.legResult)}`} />
+              )}
+            </div>
+            {leg.legResult !== "pending" && (
+              <span class={`bet-leg-progress-pill bet-leg-progress-pill--${legResultModifier(leg.legResult)}`}>
+                {typeof leg.finalValue === "number" ? leg.finalValue : legResultGlyph(leg.legResult)}
+              </span>
+            )}
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="bet-entry-footer">Placed {formatPlacedDate(bet.createdAt)}</div>
+</div>
