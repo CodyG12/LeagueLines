@@ -30,7 +30,7 @@ function showToast(message) {
 document.querySelectorAll("[data-animate-number]").forEach((el) => {
   const target = Number(el.dataset.animateNumber);
   if (Number.isFinite(target)) {
-    animateNumber(el, 0, target, { duration: 700 });
+    animateNumber(el, 0, target, { duration: 700, decimals: Number.isInteger(target) ? 0 : 1 });
   }
 });
 
