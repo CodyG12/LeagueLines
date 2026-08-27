@@ -242,6 +242,7 @@ function computeFinalOutcome(
 export async function settleBetsForProp(
   propId: string,
   result: "over" | "under" | "push",
+  finalValue: number | null = null,
 ): Promise<string[]> {
   if (!ObjectId.isValid(propId)) return [];
   const propObjectId = new ObjectId(propId);
@@ -264,7 +265,7 @@ export async function settleBetsForProp(
     const updated = await collection.findOneAndUpdate(
       { _id: bet._id, "legs.propId": propObjectId, "legs.legResult": "pending" },
       {
-        $set: { "legs.$[leg].legResult": legResult },
+        $set: { "legs.$[leg].legResult": legResult, "legs.$[leg].finalValue": finalValue },
         $inc: { pendingLegCount: -1 },
       },
       {
