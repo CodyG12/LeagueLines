@@ -2,6 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/sub_components/Header.astro";
 import Beams from "../components/react/Beams";
+import BetEntryCard from "../components/sub_components/BetEntryCard.astro";
 import { listBetsForUser } from "../lib/bets";
 
 if (!Astro.locals.user) {
@@ -33,64 +34,18 @@ const pastBets = bets.filter((bet) => bet.status !== "pending");
   <Header />
   <main class="container">
     <h2 class="title live-bets-title"><span class="live-dot" aria-hidden="true"></span>Live Bets</h2>
-    <div class="grid">
-      {
-        liveBets.map((bet) => (
-          <div class="card admin-prop">
-            <h1 class="player">
-              {bet.mode === "parlay" ? "Parlay" : bet.legs[0].player}
-            </h1>
-            <p class="status-badge">
-              <span class={`status-pill status-pill--${bet.status}`}>
-                {bet.status}
-              </span>
-              Stake: {bet.stake} — Potential payout:{" "}
-              <span data-animate-number={bet.potentialPayout}>0</span>
-            </p>
-            {bet.legs.map((leg) => (
-              <p class="time">
-                {leg.player} — {leg.pick} {leg.line} {leg.stat} ({leg.legResult}
-                )
-              </p>
-            ))}
-          </div>
-        ))
-      }
+    <div class="bet-entry-list">
+      {liveBets.map((bet) => <BetEntryCard bet={bet} />)}
       {liveBets.length === 0 && <p>No live bets right now.</p>}
     </div>
 
     <h2 class="title">Past Bets</h2>
-    <div class="grid">
-      {
-        pastBets.map((bet) => (
-          <div class="card admin-prop">
-            <h1 class="player">
-              {bet.mode === "parlay" ? "Parlay" : bet.legs[0].player}
-            </h1>
-            <p class="status-badge">
-              <span class={`status-pill status-pill--${bet.status}`}>
-                {bet.status}
-              </span>
-              Stake: {bet.stake} — Payout:{" "}
-              <span data-animate-number={bet.payout ?? 0}>0</span>
-            </p>
-            {bet.legs.map((leg) => (
-              <p class="time">
-                {leg.player} — {leg.pick} {leg.line} {leg.stat} ({leg.legResult}
-                )
-              </p>
-            ))}
-          </div>
-        ))
-      }
+    <div class="bet-entry-list">
+      {pastBets.map((bet) => <BetEntryCard bet={bet} />)}
       {pastBets.length === 0 && <p>No settled bets yet.</p>}
     </div>
 
-    <script
-      type="application/json"
-      id="past-bets-data"
-      set:html={JSON.stringify(pastBets)}
-    />
+    <script type="application/json" id="past-bets-data" set:html={JSON.stringify(pastBets)} />
   </main>
 </Layout>
 
