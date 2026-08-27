@@ -22,10 +22,13 @@ export interface BetLeg {
   propId: ObjectId;
   sport: string;
   player: string;
+  playerUserId: ObjectId | null;
+  team: string | null;
   stat: string;
   line: number;
   pick: "over" | "under";
   legResult: LegResult;
+  finalValue: number | null;
 }
 
 export interface BetDoc {
@@ -46,10 +49,14 @@ export interface PublicBetLeg {
   propId: string;
   sport: string;
   player: string;
+  playerUserId: string | null;
+  playerAvatarUrl: string | null;
+  team: string | null;
   stat: string;
   line: number;
   pick: "over" | "under";
   legResult: LegResult;
+  finalValue: number | null;
 }
 
 export interface PublicBet {
@@ -83,10 +90,14 @@ export function toPublicBet(doc: BetDoc): PublicBet {
       propId: leg.propId.toString(),
       sport: leg.sport,
       player: leg.player,
+      playerUserId: leg.playerUserId ? leg.playerUserId.toString() : null,
+      playerAvatarUrl: null,
+      team: leg.team,
       stat: leg.stat,
       line: leg.line,
       pick: leg.pick,
       legResult: leg.legResult,
+      finalValue: leg.finalValue,
     })),
     stake: doc.stake,
     potentialPayout: doc.potentialPayout,
@@ -136,10 +147,13 @@ export async function placeBets(
       propId: new ObjectId(prop.id),
       sport: prop.sport,
       player: prop.player,
+      playerUserId: prop.playerUserId ? new ObjectId(prop.playerUserId) : null,
+      team: prop.team,
       stat: prop.stat,
       line: prop.line,
       pick: pick.pick,
       legResult: "pending",
+      finalValue: null,
     });
   }
 
