@@ -2132,3 +2132,230 @@ body.has-bottom-nav:has(.open-modal.visible) {
   width: 16px;
   height: 16px;
 }
+
+/* My Bets — bet entry cards */
+.bet-entry-card {
+  background-color: var(--secondary-bg);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.bet-entry-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.bet-entry-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bet-entry-header-right {
+  display: flex;
+  align-items: center;
+}
+
+.bet-entry-mode {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--primary-text);
+}
+
+.bet-entry-stake {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+  color: var(--secondary-text);
+}
+
+.bet-entry-outcome {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  font-size: 1.1rem;
+  white-space: nowrap;
+}
+
+.bet-entry-outcome--pending {
+  color: var(--accent-purple);
+}
+
+.bet-entry-outcome--won {
+  color: var(--success-color);
+}
+
+.bet-entry-outcome--lost {
+  color: var(--danger-color);
+}
+
+.bet-entry-outcome--pushed {
+  color: var(--secondary-text);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.bet-entry-legs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.bet-leg {
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  column-gap: var(--space-3);
+  row-gap: var(--space-2);
+  align-items: center;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.bet-leg-avatar {
+  grid-row: 1;
+  grid-column: 1;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.bet-leg-info {
+  grid-row: 1;
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.bet-leg-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--primary-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bet-leg-subtitle {
+  font-size: 0.75rem;
+  color: var(--secondary-text);
+}
+
+.bet-leg-pick {
+  grid-row: 1;
+  grid-column: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.bet-leg-pick-value {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--primary-text);
+}
+
+.bet-leg-pick-stat {
+  font-size: 0.7rem;
+  color: var(--secondary-text);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.bet-leg-pick--pending .bet-leg-pick-value {
+  color: var(--accent-purple);
+}
+
+.bet-leg-pick--win .bet-leg-pick-value {
+  color: var(--success-color);
+}
+
+.bet-leg-pick--loss .bet-leg-pick-value {
+  color: var(--danger-color);
+}
+
+.bet-leg-pick--push .bet-leg-pick-value {
+  color: var(--secondary-text);
+}
+
+.bet-leg-progress-row {
+  grid-row: 2;
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.bet-leg-progress-track {
+  flex: 1;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background-color: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.bet-leg-progress-fill {
+  height: 100%;
+  width: 100%;
+  border-radius: var(--radius-pill);
+}
+
+.bet-leg-progress-fill--win {
+  background-color: var(--success-color);
+}
+
+.bet-leg-progress-fill--loss {
+  background-color: var(--danger-color);
+}
+
+.bet-leg-progress-fill--push {
+  background-color: var(--secondary-text);
+}
+
+.bet-leg-progress-pill {
+  flex-shrink: 0;
+  min-width: 28px;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-align: center;
+  border: 1.5px solid;
+}
+
+.bet-leg-progress-pill--win {
+  color: var(--success-color);
+  border-color: var(--success-color);
+}
+
+.bet-leg-progress-pill--loss {
+  color: var(--danger-color);
+  border-color: var(--danger-color);
+}
+
+.bet-leg-progress-pill--push {
+  color: var(--secondary-text);
+  border-color: var(--secondary-text);
+}
+
+.bet-entry-footer {
+  font-size: 0.75rem;
+  color: var(--secondary-text);
+}
