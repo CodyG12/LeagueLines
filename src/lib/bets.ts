@@ -1,7 +1,8 @@
 import { ObjectId, type Collection } from "mongodb";
 import clientPromise from "./mongodb";
 import { getPropById } from "./props";
-import { creditUnits, debitUnits } from "./users";
+import { creditUnits, debitUnits, getCollection as getUsersCollection } from "./users";
+import { pickSpriteFor } from "./sprites";
 
 export type BetMode = "single" | "parlay";
 export type BetStatus = "pending" | "won" | "lost" | "pushed";
@@ -106,6 +107,31 @@ export function toPublicBet(doc: BetDoc): PublicBet {
     createdAt: doc.createdAt.toISOString(),
     settledAt: doc.settledAt ? doc.settledAt.toISOString() : null,
   };
+}
+
+async function attachLegAvatars(bets: PublicBet[]): Promise<PublicBet[]> {
+  const ids = Array.from(
+    new Set(
+      bets.flatMap((b) => b.legs.map((leg) => leg.playerUserId)).filter((id): id is string => id !== null),
+    ),
+  );
+
+  let avatarById = new Map<string, string | null>();
+  if (ids.length > 0) {
+    const usersCollection = await getUsersCollection();
+    const users = await usersCollection
+      .find({ _id: { $in: ids.map((id) => new ObjectId(id)) } }, { projection: { avatarUrl: 1 } })
+      .toArray();
+    avatarById = new Map(users.map((u) => [u._id.toString(), u.avatarUrl ?? null]));
+  }
+
+  return bets.map((b) => ({
+    ...b,
+    legs: b.legs.map((leg) => {
+      const resolved = leg.playerUserId ? (avatarById.get(leg.playerUserId) ?? null) : null;
+      return { ...leg, playerAvatarUrl: resolved ?? pickSpriteFor(leg.propId) };
+    }),
+  }));
 }
 
 export async function placeBets(
@@ -215,7 +241,7 @@ export async function listBetsForUser(userId: string): Promise<PublicBet[]> {
     .find({ userId: new ObjectId(userId) })
     .sort({ createdAt: -1 })
     .toArray();
-  return docs.map(toPublicBet);
+  return attachLegAvatars(docs.map(toPublicBet));
 }
 
 export async function countPendingBetsForUser(userId: string): Promise<number> {
