@@ -78,6 +78,13 @@ function parseUpdateInput(body: unknown): UpdatePropInput | string {
   return input;
 }
 
+function parseFinalValue(body: unknown): number | null | string {
+  const raw = (body as Record<string, unknown> | null)?.finalValue;
+  if (raw === undefined || raw === null) return null;
+  if (typeof raw !== "number" || !Number.isFinite(raw)) return "finalValue must be a number or null";
+  return raw;
+}
+
 export const GET: APIRoute = async ({ params }) => {
   const prop = await getPropById(params.id!);
   if (!prop) return jsonResponse({ error: "Not found" }, 404);
@@ -89,6 +96,9 @@ export const PATCH: APIRoute = async ({ params, request }) => {
   const parsed = parseUpdateInput(body);
   if (typeof parsed === "string") return jsonResponse({ error: parsed }, 400);
 
+  const finalValue = parseFinalValue(body);
+  if (typeof finalValue === "string") return jsonResponse({ error: finalValue }, 400);
+
   if (parsed.playerUserId) {
     const user = await getUserById(parsed.playerUserId);
     if (!user) return jsonResponse({ error: "playerUserId does not reference an existing user" }, 400);
@@ -98,7 +108,7 @@ export const PATCH: APIRoute = async ({ params, request }) => {
   if (!prop) return jsonResponse({ error: "Not found" }, 404);
 
   if (parsed.status === "closed" && parsed.result) {
-    const settledUserIds = await settleBetsForProp(prop.id, parsed.result);
+    const settledUserIds = await settleBetsForProp(prop.id, parsed.result, finalValue);
     await Promise.all(settledUserIds.map((userId) => checkAndAwardBadges(userId)));
     await deleteProp(prop.id);
   }
