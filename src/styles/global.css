@@ -999,6 +999,35 @@ select {
   transform: translateX(-96px);
 }
 
+.bet-slip-leg-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.bet-slip-leg-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.bet-slip-leg-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bet-slip-leg-detail {
+  font-size: 0.75rem;
+  color: var(--secondary-text);
+}
+
 .bet-slip-leg-delete-action {
   position: absolute;
   inset: 0;
