@@ -218,9 +218,27 @@ function init() {
       const row = document.createElement("div");
       row.className = "bet-slip-leg";
 
-      const label = document.createElement("span");
-      label.textContent = `${prop.player} — ${pick} ${prop.line} ${prop.stat}`;
-      row.appendChild(label);
+      const avatar = document.createElement("img");
+      avatar.className = "bet-slip-leg-avatar";
+      avatar.src = prop.playerAvatarUrl;
+      avatar.alt = "";
+      avatar.loading = "lazy";
+      row.appendChild(avatar);
+
+      const info = document.createElement("div");
+      info.className = "bet-slip-leg-info";
+
+      const name = document.createElement("span");
+      name.className = "bet-slip-leg-name";
+      name.textContent = prop.player;
+      info.appendChild(name);
+
+      const detail = document.createElement("span");
+      detail.className = "bet-slip-leg-detail";
+      detail.textContent = `${pick === "over" ? "Over" : "Under"} ${prop.line} ${prop.stat}`;
+      info.appendChild(detail);
+
+      row.appendChild(info);
 
       const removeBtn = document.createElement("button");
       removeBtn.type = "button";
